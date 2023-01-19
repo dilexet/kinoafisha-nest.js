@@ -1,51 +1,33 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../entity/User';
-import config from '../config/authorize.config';
-
-export type JwtPayload = {
-    sub: string;
-    email: string;
-};
-
-// TODO: move it to utils
-export const extractJwtFromCookie = (req) => {
-    let token = null;
-    if (req && req.cookies) {
-        token = req.cookies['access_token'];
-    }
-    return token || ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-};
+import jwtConfigConstants from '../constants/jwt-config.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-    constructor(
-        @Inject(config.KEY) private configService: ConfigType<typeof config>,
-        @InjectRepository(User) private userRepository: Repository<User>,
-    ) {
-        super({
-            ignoreExpiration: false,
-            secretOrKey: configService.jwt.accessSecret,
-            jwtFromRequest: extractJwtFromCookie,
-        });
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {
+    super({
+      ignoreExpiration: false,
+      secretOrKey: jwtConfigConstants.JWT_ACCESS_SECRET,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    });
+  }
+
+  async validate(payload) {
+    const { userId } = payload;
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new UnauthorizedException();
     }
 
-    async validate(payload: JwtPayload) {
-        const user = await this.userRepository.findOne(
-            {
-                where:
-                    { id: payload.sub },
-            });
-
-        if (!user) throw new UnauthorizedException('Please log in to continue');
-
-        return {
-            id: payload.sub,
-            email: payload.email,
-        };
-    }
+    return {
+      id: userId,
+    };
+  }
 }

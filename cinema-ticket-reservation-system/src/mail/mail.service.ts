@@ -7,7 +7,7 @@ export class MailService {
     constructor(private mailerService: MailerService) {
     }
 
-    async sendUserConfirmation(user: UserInterface, link: string) {
+    async sendUserConfirmationAsync(user: UserInterface, link: string) {
         await this.mailerService.sendMail({
             to: user.email,
             subject: 'Welcome to Cinema ticket reservation system! Please, confirm your Email',

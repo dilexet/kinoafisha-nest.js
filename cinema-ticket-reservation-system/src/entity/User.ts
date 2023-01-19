@@ -5,29 +5,29 @@ import { AutoMap } from '@automapper/classes';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @AutoMap()
-    @Column()
-    name: string;
+  @AutoMap()
+  @Column()
+  name: string;
 
-    @AutoMap()
-    @Column()
-    email: string;
+  @AutoMap()
+  @Column()
+  email: string;
 
-    @Column()
-    passwordHash: string;
+  @Column({ nullable: true })
+  passwordHash: string;
 
-    @Column({ default: false })
-    isActivated: boolean;
+  @Column({ default: false })
+  isActivated: boolean;
 
-    @Column()
-    activationLink: string;
+  @Column({ nullable: true })
+  activationLink: string;
 
-    @ManyToOne(() => Role, role => role.users)
-    role: Role;
+  @ManyToOne(() => Role, role => role.users)
+  role: Role;
 
-    @OneToMany(() => Token, token => token.user)
-    tokens: Token[];
+  @OneToMany(() => Token, token => token.user)
+  tokens: Token[];
 }

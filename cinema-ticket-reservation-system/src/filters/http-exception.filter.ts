@@ -12,7 +12,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         response
             .status(status)
             .json({
-                errors: errors,
+                errorInfo: errors,
                 path: request.url,
                 timestamp: new Date().toISOString(),
             });

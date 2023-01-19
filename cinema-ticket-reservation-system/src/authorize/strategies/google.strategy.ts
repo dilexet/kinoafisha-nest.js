@@ -1,41 +1,38 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import config from '../config/authorize.config';
 import { User } from '../../entity/User';
 import { Strategy, VerifyCallback } from 'passport-google-oauth2';
+import googleConfigConstants from '../constants/google-config.constants';
+import { GoogleUserDto } from '../dto/google-user.dto';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-    constructor(
-        @Inject(config.KEY) private configService: ConfigType<typeof config>,
-        @InjectRepository(User) private userRepository: Repository<User>,
-    ) {
-        super({
-            clientID: configService.google.clientID,
-            clientSecret: configService.google.clientSecret,
-            callbackURL: configService.google.callbackURL,
-            scope: ['profile', 'email'],
-        });
-    }
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {
+    super({
+      clientID: googleConfigConstants.GOOGLE_ID,
+      clientSecret: googleConfigConstants.GOOGLE_CLIENT_SECRET,
+      callbackURL: googleConfigConstants.GOOGLE_CALLBACK_URL,
+      scope: ['profile', 'email'],
+    });
+  }
 
-    async validate(
-        _accessToken: string,
-        _refreshToken: string,
-        profile: any,
-        done: VerifyCallback,
-    ): Promise<any> {
-        const { id, name, emails } = profile;
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ): Promise<any> {
+    const { displayName, emails } = profile;
 
-        const user = {
-            provider: 'google',
-            providerId: id,
-            email: emails[0].value,
-            name: `${name.givenName} ${name.familyName}`,
-        };
+    const user: GoogleUserDto = {
+      email: emails[0].value,
+      name: displayName,
+    };
 
-        done(null, user);
-    }
+    done(null, user);
+  }
 }
