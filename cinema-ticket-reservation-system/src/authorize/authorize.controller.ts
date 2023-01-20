@@ -5,15 +5,13 @@ import {
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthorizeService } from './authorize.service';
 import { LogoutDto } from './dto/logout.dto';
 import { TokenDto } from './dto/token.dto';
-import appConfigConstants from '../constants/app-config.constants';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import appConfigConstants from '../shared/constants/app-config.constants';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
 
-// TODO: check transactions
 @ApiTags('Authorize')
 @Controller('authorize')
 export class AuthorizeController {
@@ -71,15 +69,6 @@ export class AuthorizeController {
   @Get('activate/:link')
   async activate(@Res() res: Response, @Param('link') link: string) {
     await this.authorizeService.activateAsync(link);
-  }
-
-
-  // TODO: test req (there is userId?)
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Get('test')
-  async test(@Req() req, @Res() res: Response) {
-    return res.status(200).json('success');
   }
 
   @Get('google')

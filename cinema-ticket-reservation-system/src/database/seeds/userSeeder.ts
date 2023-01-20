@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { Seeder } from 'typeorm-extension';
 import { User } from '../entity/User';
 import { Role } from '../entity/Role';
-import RoleEnum from '../enums/role.enum';
+import RoleEnum from '../../shared/enums/role.enum';
 
 export default class UserSeeder implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {

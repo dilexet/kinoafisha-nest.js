@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { dataSource } from './data-source';
-import { HttpExceptionFilter } from './filters/http-exception.filter';
-import { ValidationPipe } from './pipe/validation.pipe';
+import { AppModule } from './app/app.module';
+import { dataSource } from './database/data-source';
+import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
+import { ValidationPipe } from './shared/pipe/validation.pipe';
 
 
 async function bootstrap() {

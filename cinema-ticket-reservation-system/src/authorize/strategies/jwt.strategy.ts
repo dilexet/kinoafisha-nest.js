@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../../entity/User';
+import { User } from '../../database/entity/User';
 import jwtConfigConstants from '../constants/jwt-config.constants';
 
 @Injectable()
@@ -18,8 +18,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload) {
-    const { userId } = payload;
+  async validate(payload: any) {
+    const { userId, role } = payload;
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
@@ -28,6 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     return {
       id: userId,
+      role: role
     };
   }
 }

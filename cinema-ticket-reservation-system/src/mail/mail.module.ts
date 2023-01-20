@@ -21,7 +21,7 @@ import { MailService } from './mail.service';
         from: mailConfigConstants.EMAIL_FROM,
       },
       template: {
-        dir: join(process.cwd(), 'dist', 'templates'),
+        dir: join(process.cwd(), 'dist', 'shared', 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,

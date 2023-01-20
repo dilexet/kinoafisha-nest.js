@@ -3,16 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
-import { User } from '../entity/User';
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
+import { User } from '../database/entity/User';
 import { RegisterDto } from './dto/register.dto';
 import { MailService } from '../mail/mail.service';
 import { TokenService } from './utils/token.service';
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
 import { LoginDto } from './dto/login.dto';
 import { TokenDto } from './dto/token.dto';
-import appConfigConstants from '../constants/app-config.constants';
+import appConfigConstants from '../shared/constants/app-config.constants';
 import { GoogleUserDto } from './dto/google-user.dto';
+import { Role } from '../database/entity/Role';
+import RoleEnum from '../shared/enums/role.enum';
 
 @Injectable()
 export class AuthorizeService {
@@ -21,6 +23,7 @@ export class AuthorizeService {
     private tokenService: TokenService,
     @InjectMapper() private readonly mapper: Mapper,
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Role) private roleRepository: Repository<Role>,
   ) {
   }
 
@@ -50,7 +53,12 @@ export class AuthorizeService {
     if (candidate) {
       throw new BadRequestException('User with this email already exist');
     }
-    await this.userRepository.queryRunner.startTransaction();
+
+    const role = await this.roleRepository.findOneBy({ name: RoleEnum.User });
+    if (!role) {
+      throw new InternalServerErrorException('You did not create roles');
+    }
+
     try {
       const passwordHash = await bcrypt.hash(userDto.password, 5);
       const activationLink = uuid.v4();
@@ -58,6 +66,7 @@ export class AuthorizeService {
       const newUser = this.mapper.map(userDto, RegisterDto, User);
       newUser.passwordHash = passwordHash;
       newUser.activationLink = activationLink;
+      newUser.role = role;
 
       const user = await this.userRepository.save(newUser);
 
@@ -66,12 +75,9 @@ export class AuthorizeService {
       await this.mailService.sendUserConfirmationAsync(
         userDto,
         `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`);
-      await this.userRepository.queryRunner.commitTransaction();
 
       return tokens;
     } catch (err) {
-      await this.userRepository.queryRunner.rollbackTransaction();
-
       throw new InternalServerErrorException(err.message);
     }
   }
@@ -134,19 +140,20 @@ export class AuthorizeService {
   }
 
   private async registerGoogleUser(userDto: GoogleUserDto) {
-    await this.userRepository.queryRunner.startTransaction();
+    const role = await this.roleRepository.findOneBy({ name: RoleEnum.User });
+    if (!role) {
+      throw new InternalServerErrorException('You did not create roles');
+    }
+
     try {
       const newUser = this.mapper.map(userDto, GoogleUserDto, User);
+      newUser.isActivated = true;
+      newUser.role = role;
 
       const user = await this.userRepository.save(newUser);
 
-      const tokens = await this.tokenService.generateTokensAsync(user);
-
-      await this.userRepository.queryRunner.commitTransaction();
-
-      return tokens;
+      return await this.tokenService.generateTokensAsync(user);
     } catch (err) {
-      await this.userRepository.queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(err);
     }
   }

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Token } from '../../entity/Token';
+import { Token } from '../../database/entity/Token';
 import { Repository } from 'typeorm';
 import jwtConfigConstants from '../constants/jwt-config.constants';
+import { User } from '../../database/entity/User';
 
 @Injectable()
 export class TokenService {
@@ -13,10 +14,12 @@ export class TokenService {
   ) {
   }
 
-  async generateTokensAsync(user) {
+  async generateTokensAsync(user: User) {
     try {
       const payload = {
         userId: user.id,
+        roleId: user.role.id,
+        role: user.role.name,
         email: user.email,
         idActivated: user.isActivated,
       };
@@ -64,21 +67,6 @@ export class TokenService {
     }
   }
 
-  async validateAccessTokenAsync(token: string) {
-    try {
-      const accessTokenData =
-        await this.jwtService.verifyAsync(
-          token,
-          { secret: jwtConfigConstants.JWT_ACCESS_SECRET });
-      if (!accessTokenData) {
-        return null;
-      }
-      return accessTokenData;
-    } catch (err) {
-      return null;
-    }
-  }
-
   async removeTokenAsync(token) {
     try {
       await this.tokenRepository.delete({ refreshToken: token });
@@ -86,20 +74,4 @@ export class TokenService {
       throw new Error(err);
     }
   }
-
-
-  // async saveToken(userId, refreshToken) {
-  //     const user = await this.userRepository.findOneBy({ id: userId });
-  //     if (!user) {
-  //         throw new Error('User is not exist');
-  //     }
-  //     const token = await this.tokenRepository.create({
-  //         refreshToken: refreshToken,
-  //         user: user,
-  //     });
-  //
-  //     await this.tokenRepository.save(token);
-  //
-  //     return token;
-  // }
 }
