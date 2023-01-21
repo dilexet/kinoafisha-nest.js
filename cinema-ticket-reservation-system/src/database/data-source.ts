@@ -1,10 +1,15 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { User } from './entity/User';
-import { Role } from './entity/Role';
-import { Token } from './entity/Token';
 import { SeederOptions } from 'typeorm-extension';
 import UserSeeder from './seeds/userSeeder';
+import { User } from './entity/user';
+import { Role } from './entity/role';
+import { Token } from './entity/token';
+import { Cinema } from './entity/cinema';
+import { Hall } from './entity/hall';
+import { Row } from './entity/row';
+import { Seat } from './entity/seat';
+import { Movie } from './entity/movie';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'postgres',
@@ -15,7 +20,7 @@ const options: DataSourceOptions & SeederOptions = {
   database: 'cinema_db',
   synchronize: true,
   logging: false,
-  entities: [User, Role, Token],
+  entities: [User, Role, Token, Cinema, Hall, Row, Seat, Movie],
   seeds: [UserSeeder],
   migrations: [],
   subscribers: [],

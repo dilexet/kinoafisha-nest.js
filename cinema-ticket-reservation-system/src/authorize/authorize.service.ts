@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { User } from '../database/entity/User';
+import { User } from '../database/entity/user';
 import { RegisterDto } from './dto/register.dto';
 import { MailService } from '../mail/mail.service';
 import { TokenService } from './utils/token.service';
@@ -13,7 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { TokenDto } from './dto/token.dto';
 import appConfigConstants from '../shared/constants/app-config.constants';
 import { GoogleUserDto } from './dto/google-user.dto';
-import { Role } from '../database/entity/Role';
+import { Role } from '../database/entity/role';
 import RoleEnum from '../shared/enums/role.enum';
 
 @Injectable()

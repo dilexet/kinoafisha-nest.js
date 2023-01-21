@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Token } from '../../database/entity/Token';
+import { Token } from '../../database/entity/token';
 import { Repository } from 'typeorm';
 import jwtConfigConstants from '../constants/jwt-config.constants';
-import { User } from '../../database/entity/User';
+import { User } from '../../database/entity/user';
 
 @Injectable()
 export class TokenService {

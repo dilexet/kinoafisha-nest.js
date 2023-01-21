@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Seeder } from 'typeorm-extension';
-import { User } from '../entity/User';
-import { Role } from '../entity/Role';
+import { User } from '../entity/user';
+import { Role } from '../entity/role';
 import RoleEnum from '../../shared/enums/role.enum';
 
 export default class UserSeeder implements Seeder {
