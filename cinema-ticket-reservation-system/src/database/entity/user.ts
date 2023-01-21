@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
-import { Role } from './Role';
-import { Token } from './Token';
+import { Role } from './role';
+import { Token } from './token';
 import { AutoMap } from '@automapper/classes';
 
 @Entity()
