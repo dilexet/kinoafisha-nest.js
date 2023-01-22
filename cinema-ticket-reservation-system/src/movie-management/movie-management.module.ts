@@ -4,11 +4,14 @@ import { MovieManagementService } from './movie-management.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Movie } from '../database/entity/movie';
 import { Genre } from '../database/entity/genre';
+import { Country } from '../database/entity/country';
+import { MovieManagementMapperProfile } from './mapper/movie-management.mapper-profile';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Movie, Genre])],
+  imports: [TypeOrmModule.forFeature([Movie, Genre, Country])],
   controllers: [MovieManagementController],
   providers: [
+    MovieManagementMapperProfile,
     MovieManagementService,
   ],
 })

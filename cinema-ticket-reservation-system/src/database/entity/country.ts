@@ -3,7 +3,7 @@ import { Movie } from './movie';
 import { AutoMap } from '@automapper/classes';
 
 @Entity()
-export class Genre {
+export class Country {
   @PrimaryGeneratedColumn('uuid')
   @AutoMap()
   id: string;
@@ -12,6 +12,6 @@ export class Genre {
   @AutoMap()
   name: string;
 
-  @ManyToMany(() => Movie, movie => movie.genres)
+  @ManyToMany(() => Movie, movie => movie.countries)
   movies: Movie[];
 }

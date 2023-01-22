@@ -12,6 +12,7 @@ import { Seat } from './entity/seat';
 import { Movie } from './entity/movie';
 import GenreSeed from './seeds/genre.seed';
 import { Genre } from './entity/genre';
+import { Country } from './entity/country';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'postgres',
@@ -22,7 +23,7 @@ const options: DataSourceOptions & SeederOptions = {
   database: 'cinema_db',
   synchronize: true,
   logging: false,
-  entities: [User, Role, Token, Cinema, Hall, Row, Seat, Movie, Genre],
+  entities: [User, Role, Token, Cinema, Hall, Row, Seat, Movie, Genre, Country],
   seeds: [UserSeed, GenreSeed],
   migrations: [],
   subscribers: [],
