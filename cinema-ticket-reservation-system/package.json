@@ -16,7 +16,8 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "db:create": "nest build & typeorm-extension db:create",
     "db:drop": "nest build & typeorm-extension db:drop",
-    "seed": "nest build & typeorm-extension seed"
+    "seed": "nest build & typeorm-extension seed",
+    "crud": "nest g resource"
   },
   "dependencies": {
     "@automapper/classes": "^8.7.7",

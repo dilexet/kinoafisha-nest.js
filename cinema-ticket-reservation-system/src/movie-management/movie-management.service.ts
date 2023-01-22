@@ -39,7 +39,7 @@ export class MovieManagementService {
 
   async updateAsync(id: string, movieDto: MovieDto): Promise<MovieViewDto> {
     const movieNameExist = await this.movieRepository.findOneBy({ name: movieDto.name });
-    if (movieNameExist) {
+    if (movieNameExist && movieNameExist.id != id) {
       throw new BadRequestException('Movie with this name is exist');
     }
 
@@ -60,12 +60,12 @@ export class MovieManagementService {
     return this.mapper.map(movieUpdated, Movie, MovieViewDto);
   }
 
-  async deleteAsync(id: string): Promise<string> {
+  async removeAsync(id: string): Promise<string> {
     try {
       await this.movieRepository.delete(id);
       return id;
     } catch (err) {
-      throw new BadRequestException('Movie is now exist');
+      throw new BadRequestException('Movie is not exist');
     }
   }
 

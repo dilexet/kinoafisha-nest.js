@@ -25,7 +25,6 @@ export class MovieManagementController {
   @Post()
   @ApiBody({
     type: MovieDto,
-    description: 'Movie create',
   })
   async create(@Res() res: Response, @Body() movieDto: MovieDto) {
     const result = await this.movieManagementService.createAsync(movieDto);
@@ -35,7 +34,6 @@ export class MovieManagementController {
   @Put(':id')
   @ApiBody({
     type: MovieDto,
-    description: 'Movie create',
   })
   async update(@Res() res: Response, @Param('id') id: string, @Body() movieDto: MovieDto) {
     const result = await this.movieManagementService.updateAsync(id, movieDto);
@@ -43,8 +41,8 @@ export class MovieManagementController {
   }
 
   @Delete(':id')
-  async delete(@Res() res: Response, @Param('id') id: string) {
-    const result = await this.movieManagementService.deleteAsync(id);
+  async remove(@Res() res: Response, @Param('id') id: string) {
+    const result = await this.movieManagementService.removeAsync(id);
     return res.status(HttpStatus.OK).json(result);
   }
 
