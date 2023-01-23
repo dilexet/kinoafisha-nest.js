@@ -8,5 +8,14 @@ export class CinemaViewDto {
   name: string;
 
   @AutoMap()
-  address: string;
+  country: string;
+
+  @AutoMap()
+  city: string;
+
+  @AutoMap()
+  street: string;
+
+  @AutoMap()
+  houseNumber: number;
 }

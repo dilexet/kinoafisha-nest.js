@@ -39,7 +39,7 @@ export class MovieDto {
 
   @ApiProperty({
     description: 'Movie genre ids',
-    default: ['a8181ddc-baa2-4cb3-a4bf-236a64f3bff7', 'b3ccabb0-1e7a-487a-af7a-7800145c0ea5'],
+    default: ['c969159d-f715-4e49-9ebe-6e4e403f06a3', '49adb16f-7024-4ef7-aed4-be982ccf38c2'],
   })
   @IsArray()
   @IsUUID('4', { each: true })

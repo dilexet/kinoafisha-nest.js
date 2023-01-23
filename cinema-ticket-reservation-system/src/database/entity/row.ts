@@ -14,12 +14,13 @@ export class Row {
   numberRow: number;
 
   @ManyToOne(() => Hall,
-    hall => hall.rows)
+    hall => hall.rows,
+    { onDelete: 'CASCADE' })
   hall: Hall;
 
   @OneToMany(() => Seat,
     seat => seat.row,
-    { eager: true })
-  @AutoMap()
+    { cascade: true, eager: true })
+  @AutoMap(() => Seat)
   seats: Seat[];
 }

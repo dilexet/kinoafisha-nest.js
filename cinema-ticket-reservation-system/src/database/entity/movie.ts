@@ -34,15 +34,13 @@ export class Movie {
   durationInMinutes: number;
 
   @ManyToMany(() => Genre,
-    genre => genre.movies,
-    { eager: true })
+    genre => genre.movies)
   @JoinTable()
   @AutoMap()
   genres: Genre[];
 
   @ManyToMany(() => Country,
-    country => country.movies,
-    { eager: true })
+    country => country.movies)
   @JoinTable()
   @AutoMap()
   countries: Country[];

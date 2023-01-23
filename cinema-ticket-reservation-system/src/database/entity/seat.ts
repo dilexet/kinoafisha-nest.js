@@ -13,17 +13,18 @@ export class Seat {
   @AutoMap()
   numberSeat: number;
 
-  @Column()
+  @Column({ type: 'decimal' })
   @AutoMap()
   price: number;
 
   @ManyToOne(() => Row,
-    row => row.seats)
+    row => row.seats,
+    { onDelete: 'CASCADE' })
   row: Row;
 
   @ManyToOne(() => SeatType,
     seatType => seatType.seats,
-    { eager: true })
+    { cascade: true, eager: true })
   @AutoMap()
   seatType: SeatType;
 }

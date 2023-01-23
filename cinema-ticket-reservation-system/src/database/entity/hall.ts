@@ -13,12 +13,13 @@ export class Hall {
   @AutoMap()
   name: string;
 
-  @ManyToOne(() => Cinema, cinema => cinema.halls)
+  @ManyToOne(() => Cinema,
+    cinema => cinema.halls)
   cinema: Cinema;
 
   @OneToMany(() => Row,
     row => row.hall,
-    { eager: true })
-  @AutoMap()
+    { cascade: true })
+  @AutoMap(() => Row)
   rows: Row[];
 }

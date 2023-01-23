@@ -24,6 +24,7 @@ export class Address {
   @AutoMap()
   houseNumber: number;
 
-  @OneToOne(() => Cinema, cinema => cinema.address)
+  @OneToOne(() => Cinema,
+    cinema => cinema.address)
   cinema: Cinema;
 }

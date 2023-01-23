@@ -14,7 +14,7 @@ export class HallManagementController {
     type: HallDto,
   })
   async create(@Res() res, @Body() hallDto: HallDto) {
-    const result = this.hallManagementService.create(hallDto);
+    const result = await this.hallManagementService.create(hallDto);
     return res.status(HttpStatus.CREATED).json(result);
   }
 
@@ -23,25 +23,25 @@ export class HallManagementController {
     type: HallDto,
   })
   async update(@Res() res, @Param('id') id: string, @Body() hallDto: HallDto) {
-    const result = this.hallManagementService.update(id, hallDto);
+    const result = await this.hallManagementService.update(id, hallDto);
     return res.status(HttpStatus.OK).json(result);
   }
 
   @Delete(':id')
-  remove(@Res() res, @Param('id') id: string) {
-    const result = this.hallManagementService.remove(id);
+  async remove(@Res() res, @Param('id') id: string) {
+    const result = await this.hallManagementService.remove(id);
     return res.status(HttpStatus.OK).json(result);
   }
 
   @Get()
   async findAll(@Res() res) {
-    const result = this.hallManagementService.findAll();
+    const result = await this.hallManagementService.findAll();
     return res.status(HttpStatus.OK).json(result);
   }
 
   @Get(':id')
   async findOne(@Res() res, @Param('id') id: string) {
-    const result = this.hallManagementService.findOne(id);
+    const result = await this.hallManagementService.findOne(id);
     return res.status(HttpStatus.OK).json(result);
   }
 }

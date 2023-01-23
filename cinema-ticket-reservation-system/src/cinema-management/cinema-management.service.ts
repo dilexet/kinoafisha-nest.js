@@ -26,7 +26,7 @@ export class CinemaManagementService {
     const cinema: Cinema = this.mapper.map(cinemaDto, CinemaDto, Cinema);
     const cinemaCreated = await this.cinemaRepository.save(cinema);
     if (!cinemaCreated) {
-      throw new InternalServerErrorException('Error while creating movie');
+      throw new InternalServerErrorException('Error while creating cinema');
     }
 
     return this.mapper.map(cinemaCreated, Cinema, CinemaViewDto);
@@ -47,7 +47,7 @@ export class CinemaManagementService {
     cinema.address.id = cinemaExist.address.id;
     const cinemaUpdates = await this.cinemaRepository.save(cinema);
     if (!cinemaUpdates) {
-      throw new InternalServerErrorException('Error while updating movie');
+      throw new InternalServerErrorException('Error while updating cinema');
     }
 
     return this.mapper.map(cinemaUpdates, Cinema, CinemaViewDto);
@@ -65,12 +65,17 @@ export class CinemaManagementService {
   }
 
   async findAllAsync(): Promise<CinemaViewDto[]> {
-    const cinemas = await this.cinemaRepository.find();
+    const cinemas = await this.cinemaRepository.find(
+      { relations: { address: true } });
     return this.mapper.mapArray(cinemas, Cinema, CinemaViewDto);
   }
 
   async findOneAsync(id: string): Promise<CinemaViewDto> {
-    const cinema = await this.cinemaRepository.findOneBy({ id: id });
+    const cinema = await this.cinemaRepository.findOne(
+      {
+        where: { id: id },
+        relations: { address: true },
+      });
     if (!cinema) {
       throw new NotFoundException('Cinema is not exist');
     }

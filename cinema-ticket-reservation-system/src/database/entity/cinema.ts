@@ -14,14 +14,14 @@ export class Cinema {
   name: string;
 
   @OneToOne(() => Address,
-    { eager: true, cascade: true })
+    { cascade: true })
   @JoinColumn()
   @AutoMap()
   address: Address;
 
   @OneToMany(() => Hall,
     hall => hall.cinema,
-    { eager: true, cascade: true })
+    { cascade: true })
   @AutoMap()
   halls: Hall[];
 }

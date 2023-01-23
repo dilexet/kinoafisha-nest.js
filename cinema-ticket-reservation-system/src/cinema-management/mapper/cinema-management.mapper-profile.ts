@@ -26,21 +26,15 @@ export class CinemaManagementMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Cinema, CinemaViewDto,
-        forMember(dest => dest.address,
-          mapFrom(source =>
-            `${source.address.houseNumber} ${source.address.street}, ${source.address.country}, ${source.address.city}`)),
+        forMember(dest => dest.country,
+          mapFrom(source => source?.address?.country)),
+        forMember(dest => dest.city,
+          mapFrom(source => source?.address?.city)),
+        forMember(dest => dest.street,
+          mapFrom(source => source?.address?.street)),
+        forMember(dest => dest.houseNumber,
+          mapFrom(source => source?.address?.houseNumber)),
       );
-      // createMap(mapper, Country, CountryViewDto);
-      // createMap(mapper, Movie, MovieViewDto,
-      //   forMember(
-      //     (dest) => dest.countries,
-      //     mapFrom(source => source.countries),
-      //   ),
-      //   forMember(
-      //     (dest) => dest.genres,
-      //     mapFrom(source => source.genres),
-      //   ),
-      // );
     };
   }
 }

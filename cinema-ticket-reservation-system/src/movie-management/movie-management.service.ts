@@ -70,12 +70,16 @@ export class MovieManagementService {
   }
 
   async findAllAsync(): Promise<MovieViewDto[]> {
-    const movies = await this.movieRepository.find();
+    const movies = await this.movieRepository.find(
+      { relations: { genres: true, countries: true } });
     return this.mapper.mapArray(movies, Movie, MovieViewDto);
   }
 
   async findOneByIdAsync(id: string): Promise<MovieViewDto> {
-    const movie = await this.movieRepository.findOneBy({ id: id });
+    const movie = await this.movieRepository.findOne({
+      where: { id: id },
+      relations: { genres: true, countries: true },
+    });
     if (!movie) {
       throw new NotFoundException('Movie is not exist');
     }

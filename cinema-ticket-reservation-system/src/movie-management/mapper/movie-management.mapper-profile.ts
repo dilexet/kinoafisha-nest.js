@@ -24,11 +24,11 @@ export class MovieManagementMapperProfile extends AutomapperProfile {
       createMap(mapper, Movie, MovieViewDto,
         forMember(
           (dest) => dest.countries,
-          mapFrom(source => source.countries),
+          mapFrom(source => source?.countries),
         ),
         forMember(
           (dest) => dest.genres,
-          mapFrom(source => source.genres),
+          mapFrom(source => source?.genres),
         ),
       );
     };
