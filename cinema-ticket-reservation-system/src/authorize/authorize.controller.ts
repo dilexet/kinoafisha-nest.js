@@ -5,7 +5,7 @@ import {
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiExcludeEndpoint, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthorizeService } from './authorize.service';
 import { LogoutDto } from './dto/logout.dto';
 import { TokenDto } from './dto/token.dto';
@@ -71,11 +71,13 @@ export class AuthorizeController {
     await this.authorizeService.activateAsync(link);
   }
 
+  @ApiExcludeEndpoint()
   @Get('google')
   @UseGuards(GoogleOauthGuard)
   async googleAuth() {
   }
 
+  @ApiExcludeEndpoint()
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req, @Res() res: Response) {

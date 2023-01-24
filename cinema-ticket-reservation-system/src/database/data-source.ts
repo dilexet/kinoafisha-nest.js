@@ -16,6 +16,8 @@ import { Country } from './entity/country';
 import { SeatType } from './entity/seat-type';
 import SeatTypeSeed from './seeds/seat-type.seed';
 import { Address } from './entity/address';
+import { Session } from './entity/session';
+import { SessionSeat } from './entity/session-seat';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'postgres',
@@ -30,6 +32,7 @@ const options: DataSourceOptions & SeederOptions = {
     User, Role, Token,
     Movie, Genre, Country,
     Cinema, Hall, Row, Seat, SeatType, Address,
+    Session, SessionSeat,
   ],
   seeds: [UserSeed, GenreSeed, SeatTypeSeed],
   migrations: [],

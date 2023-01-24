@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Row } from './row';
 import { SeatType } from './seat-type';
 import { AutoMap } from '@automapper/classes';
+import { SessionSeat } from './session-seat';
 
 @Entity()
 export class Seat {
@@ -27,4 +28,8 @@ export class Seat {
     { cascade: true, eager: true })
   @AutoMap()
   seatType: SeatType;
+
+  @OneToMany(() => SessionSeat,
+    sessionSeat => sessionSeat.session)
+  sessionSeats: SessionSeat[];
 }

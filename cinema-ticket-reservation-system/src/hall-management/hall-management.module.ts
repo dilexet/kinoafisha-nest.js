@@ -10,9 +10,11 @@ import { SeatType } from '../database/entity/seat-type';
 import { Cinema } from '../database/entity/cinema';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([
-    Cinema, Hall, Row, Seat, SeatType,
-  ])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Cinema, Hall, Row, Seat, SeatType,
+    ])
+  ],
   controllers: [HallManagementController],
   providers: [HallManagementService, HallManagementMapperProfile],
 })

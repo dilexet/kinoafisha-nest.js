@@ -13,6 +13,7 @@ import * as uuid from 'uuid';
 import appConfigConstants from '../shared/constants/app-config.constants';
 import { MailService } from '../mail/mail.service';
 import RoleEnum from '../shared/enums/role.enum';
+import { UserLockStatus } from '../shared/enums/user-lock-status.enum';
 
 @Injectable()
 export class UserManagementService {
@@ -63,6 +64,8 @@ export class UserManagementService {
     } catch (err) {
       throw new InternalServerErrorException('Error while sending email');
     }
+
+    return this.mapper.map(userCreated, User, UserViewDto);
   }
 
   async update(id: string, userDto: UserDto) {
@@ -116,7 +119,6 @@ export class UserManagementService {
   }
 
   async remove(id: string): Promise<string> {
-    // TODO: CHECK IT !!!
     await this.checkLastAdmin(RoleEnum.Admin);
     try {
       await this.userRepository.delete(id);
@@ -126,7 +128,7 @@ export class UserManagementService {
     }
   }
 
-  async changeLockStatus(id: string, shouldBlock: boolean): Promise<UserViewDto> {
+  async changeLockStatus(id: string, lockStatus: UserLockStatus): Promise<UserViewDto> {
     const user = await this.userRepository.findOne(
       {
         where: { id: id },
@@ -137,12 +139,13 @@ export class UserManagementService {
       throw new NotFoundException('User is not exist');
     }
 
+    const shouldBlock = lockStatus == UserLockStatus.BLOCK;
+
     if (user.isBlocked == shouldBlock) {
       throw new BadRequestException(
         `User already ${shouldBlock ? 'blocked' : 'unlocked'}`);
     }
 
-    // TODO: CHECK IT !!!
     if (user.role.name == RoleEnum.Admin && shouldBlock) {
       await this.checkLastAdmin(RoleEnum.Admin);
     }
@@ -180,9 +183,9 @@ export class UserManagementService {
   }
 
   private async checkLastAdmin(roleName: string) {
-    const isThereAdmin = this.userRepository.findOneBy(
-      { role: { name: roleName } });
-    if (!isThereAdmin) {
+    const isLastAdmin = await this.userRepository.count(
+      { where: { role: { name: roleName }, isBlocked: false }, relations: { role: true } }) <= 1;
+    if (isLastAdmin) {
       throw new BadRequestException('You cannot remove the last admin');
     }
   }

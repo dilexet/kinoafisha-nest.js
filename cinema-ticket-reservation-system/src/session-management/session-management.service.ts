@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSessionManagementDto } from './dto/create-session-management.dto';
-import { UpdateSessionManagementDto } from './dto/update-session-management.dto';
+import { SessionDto } from './dto/session.dto';
+import { InjectMapper } from '@automapper/nestjs';
+import { Mapper } from '@automapper/core';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Session } from '../database/entity/session';
 
 @Injectable()
 export class SessionManagementService {
-  create(createSessionManagementDto: CreateSessionManagementDto) {
+  constructor(
+    @InjectMapper() private readonly mapper: Mapper,
+    @InjectRepository(Session) private readonly sessionRepository: Repository<Session>,
+  ) {
+  }
+
+  async create(sessionDto: SessionDto): Promise<string> {
     return 'This action adds a new sessionManagement';
   }
 
-  findAll() {
-    return `This action returns all sessionManagement`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} sessionManagement`;
-  }
-
-  update(id: number, updateSessionManagementDto: UpdateSessionManagementDto) {
+  async update(id: string, sessionDto: SessionDto): Promise<string> {
     return `This action updates a #${id} sessionManagement`;
   }
 
-  remove(id: number) {
+  async removeFromBooking(seatId: string): Promise<string> {
+    return `This action updates a #${seatId} sessionManagement`;
+  }
+
+  async remove(id: string): Promise<string> {
     return `This action removes a #${id} sessionManagement`;
+  }
+
+  async findAll(): Promise<string> {
+    return `This action returns all sessionManagement`;
+  }
+
+  async findOne(id: string): Promise<string> {
+    return `This action returns a #${id} sessionManagement`;
   }
 }

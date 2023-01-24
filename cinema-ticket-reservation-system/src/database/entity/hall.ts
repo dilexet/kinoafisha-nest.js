@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { Cinema } from './cinema';
 import { Row } from './row';
 import { AutoMap } from '@automapper/classes';
+import { Session } from './session';
 
 @Entity()
 export class Hall {
@@ -16,6 +17,11 @@ export class Hall {
   @ManyToOne(() => Cinema,
     cinema => cinema.halls)
   cinema: Cinema;
+
+  @OneToMany(() => Session,
+    session => session.hall)
+  @AutoMap()
+  sessions: Session[];
 
   @OneToMany(() => Row,
     row => row.hall,

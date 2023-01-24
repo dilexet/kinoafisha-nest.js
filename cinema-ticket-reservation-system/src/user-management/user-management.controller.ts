@@ -4,6 +4,7 @@ import { UserDto } from './dto/user.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserCreateDto } from './dto/user-create.dto';
+import { LockStatusDto } from './dto/lock-status.dto';
 
 @ApiTags('User management')
 @Controller('user-management')
@@ -31,10 +32,10 @@ export class UserManagementController {
 
   @Patch(':id')
   @ApiBody({
-    type: Boolean,
+    type: LockStatusDto,
   })
-  async changeLockStatus(@Res() res: Response, @Param('id') id: string, @Body() lookStatus: boolean) {
-    const result = await this.userManagementService.changeLockStatus(id, lookStatus);
+  async changeLockStatus(@Res() res: Response, @Param('id') id: string, @Body() lookStatus: LockStatusDto) {
+    const result = await this.userManagementService.changeLockStatus(id, lookStatus.lockStatus);
     return res.status(HttpStatus.OK).json(result);
   }
 

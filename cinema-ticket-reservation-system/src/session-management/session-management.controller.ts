@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch } from '@nestjs/common';
 import { SessionManagementService } from './session-management.service';
-import { CreateSessionManagementDto } from './dto/create-session-management.dto';
-import { UpdateSessionManagementDto } from './dto/update-session-management.dto';
+import { SessionDto } from './dto/session.dto';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 
+@ApiTags('Session management')
 @Controller('session-management')
 export class SessionManagementController {
-  constructor(private readonly sessionManagementService: SessionManagementService) {}
+  constructor(private readonly sessionManagementService: SessionManagementService) {
+  }
 
   @Post()
-  create(@Body() createSessionManagementDto: CreateSessionManagementDto) {
-    return this.sessionManagementService.create(createSessionManagementDto);
+  @ApiBody({
+    type: SessionDto,
+  })
+  async create(@Res() res: Response, @Body() sessionDto: SessionDto) {
+    const result = await this.sessionManagementService.create(sessionDto);
+    return res.status(HttpStatus.CREATED).json(result);
   }
 
-  @Get()
-  findAll() {
-    return this.sessionManagementService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sessionManagementService.findOne(+id);
+  @Put(':id')
+  @ApiBody({
+    type: SessionDto,
+  })
+  async update(@Res() res: Response, @Param('id') id: string, @Body() sessionDto: SessionDto) {
+    const result = await this.sessionManagementService.update(id, sessionDto);
+    return res.status(HttpStatus.OK).json(result);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSessionManagementDto: UpdateSessionManagementDto) {
-    return this.sessionManagementService.update(+id, updateSessionManagementDto);
+  async removeFromBooking(@Res() res: Response, @Param('id') id: string) {
+    const result = await this.sessionManagementService.removeFromBooking(id);
+    return res.status(HttpStatus.OK).json(result);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sessionManagementService.remove(+id);
+  async remove(@Res() res: Response, @Param('id') id: string) {
+    const result = await this.sessionManagementService.remove(id);
+    return res.status(HttpStatus.OK).json(result);
+  }
+
+  @Get()
+  async findAll(@Res() res: Response) {
+    const result = await this.sessionManagementService.findAll();
+    return res.status(HttpStatus.OK).json(result);
+  }
+
+  @Get(':id')
+  async findOne(@Res() res: Response, @Param('id') id: string) {
+    const result = await this.sessionManagementService.findOne(id);
+    return res.status(HttpStatus.OK).json(result);
   }
 }

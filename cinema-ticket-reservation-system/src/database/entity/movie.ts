@@ -1,11 +1,12 @@
 import {
   Column, Entity,
   ManyToMany, PrimaryGeneratedColumn,
-  JoinTable,
+  JoinTable, OneToMany,
 } from 'typeorm';
 import { Genre } from './genre';
 import { Country } from './country';
 import { AutoMap } from '@automapper/classes';
+import { Session } from './session';
 
 @Entity()
 export class Movie {
@@ -32,6 +33,11 @@ export class Movie {
   @Column()
   @AutoMap()
   durationInMinutes: number;
+
+  @OneToMany(() => Session,
+    session => session.movie)
+  @AutoMap()
+  sessions: Session[];
 
   @ManyToMany(() => Genre,
     genre => genre.movies)
