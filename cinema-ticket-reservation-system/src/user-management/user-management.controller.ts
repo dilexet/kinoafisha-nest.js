@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch } from '@nestjs/common';
 import { UserManagementService } from './user-management.service';
 import { UserDto } from './dto/user.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { UserCreateDto } from './dto/user-create.dto';
 
 @ApiTags('User management')
 @Controller('user-management')
@@ -12,9 +13,9 @@ export class UserManagementController {
 
   @Post()
   @ApiBody({
-    type: UserDto,
+    type: UserCreateDto,
   })
-  async create(@Res() res: Response, @Body() userDto: UserDto) {
+  async create(@Res() res: Response, @Body() userDto: UserCreateDto) {
     const result = await this.userManagementService.create(userDto);
     return res.status(HttpStatus.CREATED).json(result);
   }
@@ -25,6 +26,15 @@ export class UserManagementController {
   })
   async update(@Res() res: Response, @Param('id') id: string, @Body() userDto: UserDto) {
     const result = await this.userManagementService.update(id, userDto);
+    return res.status(HttpStatus.OK).json(result);
+  }
+
+  @Patch(':id')
+  @ApiBody({
+    type: Boolean,
+  })
+  async changeLockStatus(@Res() res: Response, @Param('id') id: string, @Body() lookStatus: boolean) {
+    const result = await this.userManagementService.changeLockStatus(id, lookStatus);
     return res.status(HttpStatus.OK).json(result);
   }
 

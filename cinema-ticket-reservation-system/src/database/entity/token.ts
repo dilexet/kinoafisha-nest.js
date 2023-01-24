@@ -3,12 +3,15 @@ import { User } from './user';
 
 @Entity()
 export class Token {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    refreshToken: string;
+  @Column()
+  refreshToken: string;
 
-    @ManyToOne(() => User, user => user.tokens)
-    user: User;
+  @Column({ type: 'timestamptz' })
+  expireDate: Date;
+
+  @ManyToOne(() => User, user => user.tokens)
+  user: User;
 }

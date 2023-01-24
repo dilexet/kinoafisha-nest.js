@@ -45,12 +45,12 @@ export class CinemaManagementService {
     const cinema: Cinema = this.mapper.map(cinemaDto, CinemaDto, Cinema);
     cinema.id = id;
     cinema.address.id = cinemaExist.address.id;
-    const cinemaUpdates = await this.cinemaRepository.save(cinema);
-    if (!cinemaUpdates) {
+    const cinemaUpdated = await this.cinemaRepository.save(cinema);
+    if (!cinemaUpdated) {
       throw new InternalServerErrorException('Error while updating cinema');
     }
 
-    return this.mapper.map(cinemaUpdates, Cinema, CinemaViewDto);
+    return this.mapper.map(cinemaUpdated, Cinema, CinemaViewDto);
   }
 
   async removeAsync(id: string): Promise<string> {

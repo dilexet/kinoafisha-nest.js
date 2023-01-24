@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException, ForbiddenException,
+  Injectable,
+  InternalServerErrorException, NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -15,6 +20,7 @@ import appConfigConstants from '../shared/constants/app-config.constants';
 import { GoogleUserDto } from './dto/google-user.dto';
 import { Role } from '../database/entity/role';
 import RoleEnum from '../shared/enums/role.enum';
+import { AuthProviderEnum } from '../shared/enums/auth-provider.enum';
 
 @Injectable()
 export class AuthorizeService {
@@ -37,8 +43,12 @@ export class AuthorizeService {
       throw new BadRequestException('Login or password is incorrect');
     }
 
+    if (user.isBlocked) {
+      throw new ForbiddenException('Your account has been blocked');
+    }
+
     if (!user.isActivated) {
-      throw new BadRequestException('You need to verify your email');
+      throw new ForbiddenException('You need to verify your email');
     }
 
     try {
@@ -56,7 +66,7 @@ export class AuthorizeService {
 
     const role = await this.roleRepository.findOneBy({ name: RoleEnum.User });
     if (!role) {
-      throw new InternalServerErrorException('You did not create roles');
+      throw new NotFoundException('Role is not exist');
     }
 
     try {
@@ -72,8 +82,9 @@ export class AuthorizeService {
 
       const tokens = await this.tokenService.generateTokensAsync(user);
 
-      await this.mailService.sendUserConfirmationAsync(
-        userDto,
+      await this.mailService.sendUserConfirmationLinkAsync(
+        userDto.name,
+        userDto.email,
         `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`);
 
       return tokens;
@@ -103,6 +114,14 @@ export class AuthorizeService {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new UnauthorizedException();
+    }
+
+    if (user.isBlocked) {
+      throw new ForbiddenException('Your account has been blocked');
+    }
+
+    if (!user.isActivated) {
+      throw new ForbiddenException('You need to verify your email');
     }
 
     const tokens = await this.tokenService.generateTokensAsync(user);
@@ -136,6 +155,14 @@ export class AuthorizeService {
       return await this.registerGoogleUser(userDto);
     }
 
+    if (candidate.provider == AuthProviderEnum.LOCAL) {
+      throw new BadRequestException('You need to authorize with login and password');
+    }
+
+    if (candidate.isBlocked) {
+      throw new ForbiddenException('Your account has been blocked');
+    }
+
     return await this.tokenService.generateTokensAsync(candidate);
   }
 
@@ -149,6 +176,7 @@ export class AuthorizeService {
       const newUser = this.mapper.map(userDto, GoogleUserDto, User);
       newUser.isActivated = true;
       newUser.role = role;
+      newUser.provider = AuthProviderEnum.GOOGLE;
 
       const user = await this.userRepository.save(newUser);
 
