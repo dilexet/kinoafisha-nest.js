@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { SessionTimeDto } from './session-time.dto';
 
-export class SessionDto {
+export class SessionCreateDto {
   @ApiProperty({
     type: SessionTimeDto,
     isArray: true,
@@ -13,18 +13,10 @@ export class SessionDto {
 
   @ApiProperty({
     default: 'id',
-    description: 'Cinema id',
-  })
-  @IsNotEmpty()
-  cinemaId: string;
-
-  @ApiProperty({
-    default: 'id',
     description: 'Hall id',
   })
   @IsNotEmpty()
   hallId: string;
-
 
   @ApiProperty({
     default: 'id',

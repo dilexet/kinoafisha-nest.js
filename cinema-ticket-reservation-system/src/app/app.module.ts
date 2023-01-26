@@ -12,6 +12,7 @@ import { CinemaManagementModule } from '../cinema-management/cinema-management.m
 import { HallManagementModule } from '../hall-management/hall-management.module';
 import { UserManagementModule } from '../user-management/user-management.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SessionManagementModule } from '../session-management/session-management.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CinemaManagementModule,
     HallManagementModule,
     UserManagementModule,
+    SessionManagementModule
   ],
   controllers: [AppController],
   providers: [AppService],

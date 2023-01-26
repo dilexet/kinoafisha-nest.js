@@ -26,6 +26,7 @@ const options: DataSourceOptions & SeederOptions = {
   username: 'postgres',
   password: 'root',
   database: 'cinema_db',
+  useUTC: true,
   synchronize: true,
   logging: false,
   entities: [

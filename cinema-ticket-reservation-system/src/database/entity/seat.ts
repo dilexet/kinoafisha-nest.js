@@ -25,7 +25,7 @@ export class Seat {
 
   @ManyToOne(() => SeatType,
     seatType => seatType.seats,
-    { cascade: true, eager: true })
+    { eager: true })
   @AutoMap()
   seatType: SeatType;
 

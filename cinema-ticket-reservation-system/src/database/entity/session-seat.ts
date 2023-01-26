@@ -15,11 +15,13 @@ export class SessionSeat {
   ticketState: TicketState;
 
   @ManyToOne(() => Seat,
-    seat => seat.sessionSeats)
+    seat => seat.sessionSeats,
+    { cascade: true })
   @AutoMap()
   seat: Seat;
 
   @ManyToOne(() => Session,
-    session => session.sessionSeats)
+    session => session.sessionSeats,
+    { onDelete: 'CASCADE' })
   session: Session;
 }

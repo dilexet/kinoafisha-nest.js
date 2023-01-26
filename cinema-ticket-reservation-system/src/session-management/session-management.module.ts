@@ -5,10 +5,13 @@ import { SessionManagementMapperProfile } from './mapper/session-management.mapp
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Session } from '../database/entity/session';
 import { SessionSeat } from '../database/entity/session-seat';
+import { Movie } from '../database/entity/movie';
+import { Hall } from '../database/entity/hall';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Hall, Movie,
       Session, SessionSeat,
     ]),
   ],

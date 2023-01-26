@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch } from '@nestjs/common';
 import { SessionManagementService } from './session-management.service';
-import { SessionDto } from './dto/session.dto';
+import { SessionCreateDto } from './dto/session-create.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { SessionUpdateDto } from './dto/session-update.dto';
 
 @ApiTags('Session management')
 @Controller('session-management')
@@ -12,18 +13,18 @@ export class SessionManagementController {
 
   @Post()
   @ApiBody({
-    type: SessionDto,
+    type: SessionCreateDto,
   })
-  async create(@Res() res: Response, @Body() sessionDto: SessionDto) {
+  async create(@Res() res: Response, @Body() sessionDto: SessionCreateDto) {
     const result = await this.sessionManagementService.create(sessionDto);
     return res.status(HttpStatus.CREATED).json(result);
   }
 
   @Put(':id')
   @ApiBody({
-    type: SessionDto,
+    type: SessionUpdateDto,
   })
-  async update(@Res() res: Response, @Param('id') id: string, @Body() sessionDto: SessionDto) {
+  async update(@Res() res: Response, @Param('id') id: string, @Body() sessionDto: SessionUpdateDto) {
     const result = await this.sessionManagementService.update(id, sessionDto);
     return res.status(HttpStatus.OK).json(result);
   }

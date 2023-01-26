@@ -1,5 +1,5 @@
 export enum TicketState {
-  Free,
-  Blocked,
-  Booked,
+  Free = 'free',
+  Blocked = 'blocked',
+  Booked = 'booked',
 }

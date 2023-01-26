@@ -14,6 +14,10 @@ export class Session {
   @AutoMap()
   startDate: Date;
 
+  @Column({ type: 'timestamptz' })
+  @AutoMap()
+  endDate: Date;
+
   @Column({ type: 'decimal' })
   @AutoMap()
   coefficient: number;
@@ -32,7 +36,7 @@ export class Session {
 
   @OneToMany(() => SessionSeat,
     sessionSeat => sessionSeat.session,
-    { cascade: true })
+    { cascade: true, eager: true })
   @AutoMap()
   sessionSeats: SessionSeat[];
 }
