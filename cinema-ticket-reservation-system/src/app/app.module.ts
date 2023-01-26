@@ -13,6 +13,14 @@ import { HallManagementModule } from '../hall-management/hall-management.module'
 import { UserManagementModule } from '../user-management/user-management.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SessionManagementModule } from '../session-management/session-management.module';
+import { ImageUploadModule } from '../image-upload/image-upload.module';
+import { GenresModule } from '../genres/genres.module';
+import { CountriesModule } from '../countries/countries.module';
+import { RolesModule } from '../roles/roles.module';
+import { SeatTypesModule } from '../seat-types/seat-types.module';
+import { CinemasModule } from '../cinemas/cinemas.module';
+import { HallsModule } from '../halls/halls.module';
+import { MoviesModule } from '../movies/movies.module';
 
 @Module({
   imports: [
@@ -21,16 +29,14 @@ import { SessionManagementModule } from '../session-management/session-managemen
       { strategyInitializer: classes() }),
     ScheduleModule.forRoot(),
     MailModule,
-    AuthorizeModule,
-    MovieManagementModule,
-    CinemaManagementModule,
-    HallManagementModule,
-    UserManagementModule,
-    SessionManagementModule
+    ImageUploadModule, GenresModule, CountriesModule, RolesModule,
+    SeatTypesModule, CinemasModule, HallsModule, MoviesModule,
+    AuthorizeModule, UserManagementModule,
+    CinemaManagementModule, HallManagementModule,
+    MovieManagementModule, SessionManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-
 }

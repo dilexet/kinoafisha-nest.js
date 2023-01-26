@@ -1,12 +1,10 @@
 import {
-  Body, Controller, Delete, Get, HttpStatus, Param, Post, Put,
-  Res, UploadedFile,
+  Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { MovieManagementService } from './movie-management.service';
 import { Response } from 'express';
 import { MovieDto } from './dto/movie.dto';
-import { ApiFile } from '../shared/decorators/api-file.decorator';
 
 @ApiTags('Movie management')
 @Controller('movie-management')
@@ -14,12 +12,6 @@ export class MovieManagementController {
   constructor(
     private movieManagementService: MovieManagementService,
   ) {
-  }
-
-  @Post('upload')
-  @ApiFile()
-  uploadFile(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {
-    return res.status(HttpStatus.CREATED).json(file.filename);
   }
 
   @Post()

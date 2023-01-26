@@ -8,6 +8,7 @@ import { MovieDto } from './dto/movie.dto';
 import { Genre } from '../database/entity/genre';
 import { Country } from '../database/entity/country';
 import { MovieViewDto } from './dto/movie-view.dto';
+import { CountryRepository } from '../database/repository/country.repository';
 
 @Injectable()
 export class MovieManagementService {
@@ -15,7 +16,7 @@ export class MovieManagementService {
     @InjectMapper() private readonly mapper: Mapper,
     @InjectRepository(Movie) private movieRepository: Repository<Movie>,
     @InjectRepository(Genre) private genreRepository: Repository<Genre>,
-    @InjectRepository(Country) private countryRepository: Repository<Country>,
+    private countryRepository: CountryRepository,
   ) {
   }
 
@@ -103,10 +104,14 @@ export class MovieManagementService {
     const countryArray: Country[] = [];
 
     for (const name of countryNames) {
-      const countryExist = await this.countryRepository.findOneBy({ name: name });
+      const countryExist = await this.countryRepository
+        .getOne()
+        .where(x => x.name)
+        .equal(name, { matchCase: false });
       if (!countryExist) {
-        const country: Country = this.countryRepository.create({ name: name });
-        const newCountry = await this.countryRepository.save(country);
+        const country = new Country();
+        country.name = name;
+        const newCountry = await this.countryRepository.create(country);
         countryArray.push(newCountry);
       } else {
         countryArray.push(countryExist);

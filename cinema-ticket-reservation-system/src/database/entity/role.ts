@@ -1,14 +1,17 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
-import {User} from './user';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { User } from './user';
+import { AutoMap } from '@automapper/classes';
 
 @Entity()
 export class Role {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  @AutoMap()
+  id: string;
 
-    @Column()
-    name: string;
+  @Column()
+  @AutoMap()
+  name: string;
 
-    @OneToMany(() => User, user => user.role)
-    users: User[];
+  @OneToMany(() => User, user => user.role)
+  users: User[];
 }

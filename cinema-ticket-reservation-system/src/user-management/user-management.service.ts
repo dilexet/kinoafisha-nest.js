@@ -101,7 +101,6 @@ export class UserManagementService {
       throw new NotFoundException('Role is not exist');
     }
 
-    // TODO: CHECK IT !!!
     if (user.role.name == RoleEnum.Admin && role.name != RoleEnum.Admin) {
       await this.checkLastAdmin(RoleEnum.Admin);
     }

@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 
-export class GenreViewDto {
+export class SeatTypeViewDto {
   @AutoMap()
   id: string;
 
