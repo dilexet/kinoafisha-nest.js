@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import * as ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Token } from '../../database/entity/Token';
-import { Repository } from 'typeorm';
+import { Token } from '../../database/entity/token';
+import { Repository, LessThanOrEqual } from 'typeorm';
 import jwtConfigConstants from '../constants/jwt-config.constants';
-import { User } from '../../database/entity/User';
+import { User } from '../../database/entity/user';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class TokenService {
@@ -28,6 +30,10 @@ export class TokenService {
         expiresIn: jwtConfigConstants.JWT_ACCESS_EXPIRES_IN,
       });
 
+      const expiresInMilliseconds = ms(jwtConfigConstants.JWT_REFRESH_EXPIRES_IN);
+      const expireDate = new Date();
+      expireDate.setMilliseconds(expiresInMilliseconds);
+
       const refreshToken = await this.jwtService.signAsync(payload, {
         secret: jwtConfigConstants.JWT_REFRESH_SECRET,
         expiresIn: jwtConfigConstants.JWT_REFRESH_EXPIRES_IN,
@@ -35,9 +41,9 @@ export class TokenService {
 
       await this.tokenRepository.save({
         refreshToken: refreshToken,
+        expireDate: expireDate,
         user: user,
       });
-
       return {
         accessToken, refreshToken,
       };
@@ -67,11 +73,25 @@ export class TokenService {
     }
   }
 
-  async removeTokenAsync(token) {
+  async removeTokenAsync(token: string) {
     try {
       await this.tokenRepository.delete({ refreshToken: token });
     } catch (err) {
       throw new Error(err);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  private async clearRefreshTokens() {
+    const expireTokens = await this.tokenRepository.find(
+      {
+        where: { expireDate: LessThanOrEqual(new Date()) },
+        relations: { user: false },
+      },
+    );
+    for (const expireToken of expireTokens) {
+      await this.tokenRepository.delete(expireToken.id);
+      console.log(expireToken.id);
     }
   }
 }

@@ -3,15 +3,19 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { dataSource } from './database/data-source';
 import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import { ValidationPipe } from './shared/pipe/validation.pipe';
 
 
 async function bootstrap() {
   dataSource.initialize().then(async () => {
-    const app = await NestFactory.create(AppModule);
+
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
     app.enableCors();
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalPipes(new ValidationPipe());
+    app.useStaticAssets(join(__dirname, '..', 'images'), { prefix: '/images/' });
 
     const config = new DocumentBuilder()
       .setTitle('Cinema ticket reservation system')

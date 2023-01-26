@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, Mapper } from '@automapper/core';
-import { User } from '../../database/entity/User';
+import { createMap, Mapper, MappingProfile } from '@automapper/core';
+import { User } from '../../database/entity/user';
 import { RegisterDto } from '../dto/register.dto';
 import { GoogleUserDto } from '../dto/google-user.dto';
 
 @Injectable()
 export class AuthorizeMapperProfile extends AutomapperProfile {
-    constructor(@InjectMapper() mapper: Mapper) {
-        super(mapper);
-    }
+  constructor(@InjectMapper() mapper: Mapper) {
+    super(mapper);
+  }
 
-    override get profile() {
-        return (mapper) => {
-            createMap(mapper, RegisterDto, User);
-            createMap(mapper, GoogleUserDto, User);
-        };
-    }
+  override get profile(): MappingProfile {
+    return (mapper) => {
+      createMap(mapper, RegisterDto, User);
+      createMap(mapper, GoogleUserDto, User);
+    };
+  }
 }
