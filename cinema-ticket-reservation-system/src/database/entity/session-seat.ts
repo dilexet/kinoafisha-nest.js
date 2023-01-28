@@ -3,6 +3,7 @@ import { AutoMap } from '@automapper/classes';
 import { Session } from './session';
 import { Seat } from './seat';
 import { TicketState } from '../../shared/enums/ticket-state.enum';
+import { BookedOrder } from './booked-order';
 
 @Entity()
 export class SessionSeat {
@@ -24,4 +25,9 @@ export class SessionSeat {
     session => session.sessionSeats,
     { onDelete: 'CASCADE' })
   session: Session;
+
+  @ManyToOne(() => BookedOrder,
+    bookedOrder => bookedOrder.sessionSeats,
+    { onDelete: 'SET NULL' })
+  bookedOrder: BookedOrder;
 }

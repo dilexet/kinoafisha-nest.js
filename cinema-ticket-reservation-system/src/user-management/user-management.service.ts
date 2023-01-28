@@ -14,6 +14,7 @@ import appConfigConstants from '../shared/constants/app-config.constants';
 import { MailService } from '../mail/mail.service';
 import RoleEnum from '../shared/enums/role.enum';
 import { UserLockStatus } from '../shared/enums/user-lock-status.enum';
+import { UserProfile } from '../database/entity/user-profile';
 
 @Injectable()
 export class UserManagementService {
@@ -48,7 +49,7 @@ export class UserManagementService {
     user.passwordHash = passwordHash;
     user.activationLink = activationLink;
     user.role = role;
-
+    user.userProfile = new UserProfile();
     const userCreated = await this.userRepository.save(user);
 
     if (!userCreated) {

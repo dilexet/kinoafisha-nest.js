@@ -21,6 +21,7 @@ import { GoogleUserDto } from './dto/google-user.dto';
 import { Role } from '../database/entity/role';
 import RoleEnum from '../shared/enums/role.enum';
 import { AuthProviderEnum } from '../shared/enums/auth-provider.enum';
+import { UserProfile } from '../database/entity/user-profile';
 
 @Injectable()
 export class AuthorizeService {
@@ -77,6 +78,8 @@ export class AuthorizeService {
       newUser.passwordHash = passwordHash;
       newUser.activationLink = activationLink;
       newUser.role = role;
+      newUser.userProfile = new UserProfile();
+
 
       const user = await this.userRepository.save(newUser);
 
@@ -177,6 +180,7 @@ export class AuthorizeService {
       newUser.isActivated = true;
       newUser.role = role;
       newUser.provider = AuthProviderEnum.GOOGLE;
+      newUser.userProfile = new UserProfile();
 
       const user = await this.userRepository.save(newUser);
 
