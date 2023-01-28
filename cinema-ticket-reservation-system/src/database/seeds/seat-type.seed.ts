@@ -10,6 +10,6 @@ export default class SeatTypeSeed implements Seeder {
       return { name: value };
     });
     const seatTypeRepository = dataSource.getRepository(SeatType);
-    await seatTypeRepository.insert(seatTypes);
+    await seatTypeRepository.save(seatTypes);
   }
 }

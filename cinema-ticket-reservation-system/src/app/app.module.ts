@@ -21,6 +21,9 @@ import { SeatTypesModule } from '../seat-types/seat-types.module';
 import { CinemasModule } from '../cinemas/cinemas.module';
 import { HallsModule } from '../halls/halls.module';
 import { MoviesModule } from '../movies/movies.module';
+import { MovieFilterModule } from '../movie-filter/movie-filter.module';
+import { BookingModule } from '../booking/booking.module';
+import { UserProfileModule } from '../user-profile/user-profile.module';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { MoviesModule } from '../movies/movies.module';
     AuthorizeModule, UserManagementModule,
     CinemaManagementModule, HallManagementModule,
     MovieManagementModule, SessionManagementModule,
+    MovieFilterModule, BookingModule, UserProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

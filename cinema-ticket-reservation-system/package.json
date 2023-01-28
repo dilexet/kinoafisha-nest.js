@@ -17,6 +17,7 @@
     "db:create": "nest build & typeorm-extension db:create",
     "db:drop": "nest build & typeorm-extension db:drop",
     "seed": "nest build & typeorm-extension seed",
+    "db:create:seed": "nest build & typeorm-extension db:create & typeorm-extension seed",
     "crud": "nest g resource"
   },
   "dependencies": {

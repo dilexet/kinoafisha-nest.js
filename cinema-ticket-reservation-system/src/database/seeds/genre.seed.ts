@@ -10,6 +10,6 @@ export default class GenreSeed implements Seeder {
       return { name: value };
     });
     const genreRepository = dataSource.getRepository(Genre);
-    await genreRepository.insert(genres);
+    await genreRepository.save(genres);
   }
 }

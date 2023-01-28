@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne } from 'typeorm';
 import { Role } from './role';
 import { Token } from './token';
 import { AutoMap } from '@automapper/classes';
 import { AuthProviderEnum } from '../../shared/enums/auth-provider.enum';
+import { UserProfile } from './user-profile';
 
 @Entity()
 export class User {
@@ -34,6 +35,11 @@ export class User {
 
   @Column({ nullable: true })
   activationLink: string;
+
+  @OneToOne(() => UserProfile,
+    userProfile => userProfile.user,
+    { cascade: true })
+  userProfile: UserProfile;
 
   @AutoMap()
   @ManyToOne(() => Role,
