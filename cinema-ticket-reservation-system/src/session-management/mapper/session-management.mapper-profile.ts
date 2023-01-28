@@ -6,7 +6,7 @@ import { SessionSeatViewDto } from '../dto/session-seat-view.dto';
 import { Session } from '../../database/entity/session';
 import { SessionViewDto } from '../dto/session-view.dto';
 import { SessionDetailsViewDto } from '../dto/session-details-view.dto';
-import * as moment from 'moment-timezone';
+import { convertDate } from '../../shared/utils/convert-date';
 
 
 @Injectable()
@@ -38,6 +38,10 @@ export class SessionManagementMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Session, SessionViewDto,
+        forMember(dest => dest.startDate,
+          mapFrom(source => convertDate(source.startDate))),
+        forMember(dest => dest.endDate,
+          mapFrom(source => convertDate(source.endDate))),
         forMember(dest => dest.movieId,
           mapFrom(source => source.movie.id)),
         forMember(dest => dest.movieName,
@@ -56,6 +60,10 @@ export class SessionManagementMapperProfile extends AutomapperProfile {
 
 
       createMap(mapper, Session, SessionDetailsViewDto,
+        forMember(dest => dest.sessionData.startDate,
+          mapFrom(source => convertDate(source.startDate))),
+        forMember(dest => dest.sessionData.endDate,
+          mapFrom(source => convertDate(source.endDate))),
         forMember(dest => dest.sessionData,
           mapFrom(source => mapper.map(source, Session, SessionViewDto))),
         forMember(dest => dest.sessionSeats,

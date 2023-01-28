@@ -13,7 +13,7 @@ export class MovieViewDto {
   posterURL: string;
 
   @AutoMap()
-  premiereDate: Date;
+  premiereDate: string;
 
   @AutoMap()
   genres: GenreViewDto[];

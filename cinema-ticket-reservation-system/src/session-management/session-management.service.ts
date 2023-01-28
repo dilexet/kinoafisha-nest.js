@@ -28,9 +28,6 @@ export class SessionManagementService {
   }
 
   // TODO: check if hall is free
-  // TODO: timezones !
-  // TODO: hall work load in session for users
-  // TODO: end date is not correct
   async create(sessionDto: SessionCreateDto): Promise<SessionViewDto[]> {
     const hallExist = await this.hallRepository.findOne(
       {

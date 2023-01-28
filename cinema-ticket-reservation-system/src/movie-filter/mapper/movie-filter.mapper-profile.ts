@@ -12,8 +12,8 @@ import { CinemaViewDto } from '../dto/cinema-view.dto';
 import { Cinema } from '../../database/entity/cinema';
 import { SessionViewDto } from '../dto/session-view.dto';
 import { Session } from '../../database/entity/session';
-import { TicketState } from '../../shared/enums/ticket-state.enum';
 import { hallWorkLoadCalculation } from '../../shared/utils/hall-work-load-calculation';
+import { convertDate } from '../../shared/utils/convert-date';
 
 @Injectable()
 export class MovieFilterMapperProfile extends AutomapperProfile {
@@ -33,6 +33,8 @@ export class MovieFilterMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Session, SessionViewDto,
+        forMember(dest => dest.startDate,
+          mapFrom(source => convertDate(source.startDate))),
         forMember(dest => dest.hallName,
           mapFrom(source => source.hall.name)),
         forMember(dest => dest.hallWorkLoad,
@@ -40,6 +42,8 @@ export class MovieFilterMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Movie, MovieViewDto,
+        forMember(dest => dest.premiereDate,
+          mapFrom(source => convertDate(source.premiereDate))),
         forMember(dest => dest.countries,
           mapFrom(source => source.countries)),
         forMember(dest => dest.genres,
@@ -47,6 +51,8 @@ export class MovieFilterMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Movie, MovieDetailsViewDto,
+        forMember(dest => dest.premiereDate,
+          mapFrom(source => convertDate(source.premiereDate))),
         forMember(dest => dest.countries,
           mapFrom(source => source.countries)),
         forMember(dest => dest.genres,

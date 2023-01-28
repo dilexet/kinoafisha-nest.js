@@ -5,10 +5,10 @@ export class SessionViewDto {
   id: string;
 
   @AutoMap()
-  startDate: Date;
+  startDate: string;
 
   @AutoMap()
-  endDate: Date;
+  endDate: string;
 
   @AutoMap()
   coefficient: number;

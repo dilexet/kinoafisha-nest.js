@@ -14,6 +14,7 @@ import { SeatDetailsViewDto } from '../dto/seat-details-view.dto';
 import { Seat } from '../../database/entity/seat';
 import { BookedOrder } from '../../database/entity/booked-order';
 import { BookedOrderViewDto } from '../dto/booked-order-view.dto';
+import { convertDate } from '../../shared/utils/convert-date';
 
 @Injectable()
 export class BookTicketsMapperProfile extends AutomapperProfile {
@@ -31,11 +32,13 @@ export class BookTicketsMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Movie, MovieDetailsViewDto,
-        forMember(dest => dest.genres,
-          mapFrom(source => source.genres.map(x => x.name))),
-        forMember(dest => dest.countries,
-          mapFrom(source => source.countries.map(x => x.name))),
-      );
+        forMember(dest => dest.premiereDate,
+          mapFrom(source => convertDate(source.premiereDate))),
+          forMember(dest => dest.genres,
+            mapFrom(source => source.genres.map(x => x.name))),
+          forMember(dest => dest.countries,
+            mapFrom(source => source.countries.map(x => x.name))),
+        );
 
       createMap(mapper, Seat, SeatDetailsViewDto,
         forMember(dest => dest.seatType,
@@ -58,6 +61,10 @@ export class BookTicketsMapperProfile extends AutomapperProfile {
       );
 
       createMap(mapper, Session, SessionDetailsViewDto,
+        forMember(dest => dest.startDate,
+          mapFrom(source => convertDate(source.startDate))),
+        forMember(dest => dest.endDate,
+          mapFrom(source => convertDate(source.endDate))),
         forMember(dest => dest.hallWorkLoad,
           mapFrom(source => hallWorkLoadCalculation(source.sessionSeats))),
         forMember(dest => dest.movie,

@@ -14,7 +14,7 @@ export class MovieViewDto {
   description: string;
 
   @AutoMap()
-  premiereDate: Date;
+  premiereDate: string;
 
   @AutoMap()
   durationInMinutes: number;

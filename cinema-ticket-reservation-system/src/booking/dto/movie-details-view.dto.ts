@@ -14,7 +14,7 @@ export class MovieDetailsViewDto {
   posterURL: string;
 
   @AutoMap()
-  premiereDate: Date;
+  premiereDate: string;
 
   @AutoMap()
   durationInMinutes: number;

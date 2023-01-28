@@ -5,7 +5,7 @@ export class SessionViewDto {
   id: string;
 
   @AutoMap()
-  startDate: Date;
+  startDate: string;
 
   @AutoMap()
   hallWorkLoad: number;
