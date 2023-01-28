@@ -3,7 +3,7 @@ import { SessionCreateDto } from './dto/session-create.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Session } from '../database/entity/session';
 import { SessionViewDto } from './dto/session-view.dto';
 import { SessionSeatViewDto } from './dto/session-seat-view.dto';
@@ -15,6 +15,7 @@ import * as moment from 'moment';
 import { SessionUpdateDto } from './dto/session-update.dto';
 import { Row } from '../database/entity/row';
 import { TicketState } from '../shared/enums/ticket-state.enum';
+import { convertDate } from '../shared/utils/convert-date';
 
 @Injectable()
 export class SessionManagementService {
@@ -59,6 +60,12 @@ export class SessionManagementService {
       const sessionEnd = moment(sessionTime.startDate)
         .add(movieExist.durationInMinutes + 10, 'minutes')
         .toDate();
+
+      const sessionExistInThisTime = await this.findSessionExistInThisTime(sessionStart, sessionEnd);
+      if (sessionExistInThisTime) {
+        throw new BadRequestException(
+          `Session exist in this time (${convertDate(sessionExistInThisTime.startDate)} - ${convertDate(sessionExistInThisTime.endDate)})`);
+      }
 
       const session: Session = new Session();
       session.coefficient = sessionTime.coefficient;
@@ -137,6 +144,12 @@ export class SessionManagementService {
       .add(sessionExist.movie.durationInMinutes + 10, 'minutes')
       .toDate();
 
+    const sessionExistInThisTime = await this.findSessionExistInThisTime(sessionStart, sessionEnd);
+    if (sessionExistInThisTime) {
+      throw new BadRequestException(
+        `Session exist in this time (${convertDate(sessionExistInThisTime.startDate)} - ${convertDate(sessionExistInThisTime.endDate)})`);
+    }
+
     session.coefficient = sessionDto.sessionTime.coefficient;
     session.startDate = sessionStart;
     session.endDate = sessionEnd;
@@ -200,8 +213,8 @@ export class SessionManagementService {
   }
 
   async findOne(id: string): Promise<SessionDetailsViewDto> {
-    const session = await this.sessionRepository.findOne(
-      {
+    const session = await this.sessionRepository
+      .findOne({
         where: { id: id },
         relations: {
           movie: true,
@@ -228,5 +241,18 @@ export class SessionManagementService {
     }
 
     return sessionSeats;
+  }
+
+  private async findSessionExistInThisTime(sessionStart: Date, sessionEnd: Date): Promise<Session> {
+    return await this.sessionRepository.findOne({
+      where: [
+        {
+          startDate: Between(sessionStart, sessionEnd),
+        },
+        {
+          endDate: Between(sessionStart, sessionEnd),
+        },
+      ],
+    });
   }
 }
