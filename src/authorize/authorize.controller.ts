@@ -46,7 +46,7 @@ export class AuthorizeController {
   })
   @Post('logout')
   async logout(@Res() res: Response, @Body() logoutDto: LogoutDto) {
-    await this.authorizeService.logoutAsync(logoutDto.token);
+    await this.authorizeService.logoutAsync(logoutDto.refreshToken);
     return res.status(HttpStatus.OK).json({ message: 'logout success' });
   }
 
