@@ -3,7 +3,6 @@ import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, Mapper, MappingProfile } from '@automapper/core';
 import { User } from '../../database/entity/user';
 import { RegisterDto } from '../dto/register.dto';
-import { GoogleUserDto } from '../dto/google-user.dto';
 
 @Injectable()
 export class AuthorizeMapperProfile extends AutomapperProfile {
@@ -14,7 +13,6 @@ export class AuthorizeMapperProfile extends AutomapperProfile {
   override get profile(): MappingProfile {
     return (mapper) => {
       createMap(mapper, RegisterDto, User);
-      createMap(mapper, GoogleUserDto, User);
     };
   }
 }

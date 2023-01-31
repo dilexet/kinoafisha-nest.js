@@ -11,9 +11,7 @@ import { AuthorizeMapperProfile } from './mapper/authorize.mapper-profile';
 import { MailService } from '../mail/mail.service';
 import jwtConfigConstants from './constants/jwt-config.constants';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { GoogleOauthGuard } from './guards/google-oauth.guard';
 import { RoleGuard } from './guards/role.guard';
 
 @Module({
@@ -31,9 +29,7 @@ import { RoleGuard } from './guards/role.guard';
     AuthorizeMapperProfile,
     JwtStrategy,
     JwtAuthGuard,
-    GoogleOauthGuard,
     RoleGuard,
-    GoogleStrategy,
     MailService,
     JwtService,
     TokenService,

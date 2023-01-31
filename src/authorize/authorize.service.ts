@@ -17,7 +17,6 @@ import { TokenService } from './utils/token.service';
 import { LoginDto } from './dto/login.dto';
 import { TokenDto } from './dto/token.dto';
 import appConfigConstants from '../shared/constants/app-config.constants';
-import { GoogleUserDto } from './dto/google-user.dto';
 import { Role } from '../database/entity/role';
 import RoleEnum from '../shared/enums/role.enum';
 import { AuthProviderEnum } from '../shared/enums/auth-provider.enum';
@@ -151,14 +150,17 @@ export class AuthorizeService {
     }
   }
 
-  async googleSignIn(userDto: GoogleUserDto) {
-    const candidate = await this.userRepository.findOneBy({ email: userDto.email });
+  async googleSignIn(token: string) {
+    const tokenPayload = await this.tokenService.verifyGoogleToken(token);
+    const { name, email } = tokenPayload;
+
+    const candidate = await this.userRepository.findOneBy({ email: email });
 
     if (!candidate) {
-      return await this.registerGoogleUser(userDto);
+      return await this.registerGoogleUser(name, email);
     }
 
-    if (candidate.provider == AuthProviderEnum.LOCAL) {
+    if (candidate.provider === AuthProviderEnum.LOCAL) {
       throw new BadRequestException('You need to authorize with login and password');
     }
 
@@ -169,24 +171,26 @@ export class AuthorizeService {
     return await this.tokenService.generateTokensAsync(candidate);
   }
 
-  private async registerGoogleUser(userDto: GoogleUserDto) {
+  private async registerGoogleUser(name: string, email: string) {
     const role = await this.roleRepository.findOneBy({ name: RoleEnum.User });
     if (!role) {
       throw new InternalServerErrorException('You did not create roles');
     }
 
-    try {
-      const newUser = this.mapper.map(userDto, GoogleUserDto, User);
-      newUser.isActivated = true;
-      newUser.role = role;
-      newUser.provider = AuthProviderEnum.GOOGLE;
-      newUser.userProfile = new UserProfile();
+    const newUser = new User();
+    newUser.name = name;
+    newUser.email = email;
+    newUser.isActivated = true;
+    newUser.role = role;
+    newUser.provider = AuthProviderEnum.GOOGLE;
+    newUser.userProfile = new UserProfile();
 
-      const user = await this.userRepository.save(newUser);
+    const userCreated = await this.userRepository.save(newUser);
 
-      return await this.tokenService.generateTokensAsync(user);
-    } catch (err) {
-      throw new InternalServerErrorException(err);
+    if (!userCreated) {
+      throw new BadRequestException('Error while creating google user');
     }
+
+    return await this.tokenService.generateTokensAsync(userCreated);
   }
 }

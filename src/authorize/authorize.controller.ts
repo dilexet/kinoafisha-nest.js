@@ -1,6 +1,6 @@
 import {
   Body, Controller, Get,
-  HttpStatus, Param, Post, Redirect, Req, Res, UseGuards,
+  HttpStatus, Param, Post, Redirect, Req, Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
@@ -10,7 +10,7 @@ import { AuthorizeService } from './authorize.service';
 import { LogoutDto } from './dto/logout.dto';
 import { TokenDto } from './dto/token.dto';
 import appConfigConstants from '../shared/constants/app-config.constants';
-import { GoogleOauthGuard } from './guards/google-oauth.guard';
+
 
 @ApiTags('Authorize')
 @Controller('authorize')
@@ -60,7 +60,6 @@ export class AuthorizeController {
     return res.status(HttpStatus.OK).json(result);
   }
 
-
   @ApiParam({
     name: 'link',
     description: 'Activate account with link from email',
@@ -72,20 +71,9 @@ export class AuthorizeController {
   }
 
   @ApiExcludeEndpoint()
-  @Get('google')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuth() {
-  }
-
-  @ApiExcludeEndpoint()
-  @Get('google/callback')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(@Req() req, @Res() res: Response) {
-    if (!req.user) {
-      return res.status(HttpStatus.BAD_REQUEST).json(
-        { message: 'No user from google' });
-    }
-    const result = await this.authorizeService.googleSignIn(req.user);
+  @Post('google')
+  async googleAuthCallback(@Req() req, @Res() res: Response, @Body('token') token: string) {
+    const result = await this.authorizeService.googleSignIn(token);
     return res.status(HttpStatus.OK).json(result);
   }
 }

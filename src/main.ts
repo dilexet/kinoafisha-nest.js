@@ -12,7 +12,9 @@ async function bootstrap() {
   dataSource.initialize().then(async () => {
 
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
-    app.enableCors();
+    app.enableCors({
+      origin: 'http://localhost:3000',
+    });
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalPipes(new ValidationPipe());
     app.useStaticAssets(join(__dirname, '..', 'images'), { prefix: '/images/' });

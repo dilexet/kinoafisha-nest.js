@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,13 +7,18 @@ import { Repository, LessThanOrEqual } from 'typeorm';
 import jwtConfigConstants from '../constants/jwt-config.constants';
 import { User } from '../../database/entity/user';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { OAuth2Client } from 'google-auth-library';
+import googleConfigConstants from '../constants/google-config.constants';
 
 @Injectable()
 export class TokenService {
+  private oAuth2Client: OAuth2Client;
+
   constructor(
     private jwtService: JwtService,
     @InjectRepository(Token) private tokenRepository: Repository<Token>,
   ) {
+    this.oAuth2Client = new OAuth2Client(googleConfigConstants.GOOGLE_ID, googleConfigConstants.GOOGLE_SECRET);
   }
 
   async generateTokensAsync(user: User) {
@@ -23,7 +28,7 @@ export class TokenService {
         roleId: user.role.id,
         role: user.role.name,
         email: user.email,
-        idActivated: user.isActivated,
+        isActivated: user.isActivated,
       };
       const accessToken = await this.jwtService.signAsync(payload, {
         secret: jwtConfigConstants.JWT_ACCESS_SECRET,
@@ -78,6 +83,19 @@ export class TokenService {
       await this.tokenRepository.delete({ refreshToken: token });
     } catch (err) {
       throw new Error(err);
+    }
+  }
+
+  async verifyGoogleToken(token: string) {
+    try {
+      const tokenVerifyResult = await this.oAuth2Client.verifyIdToken({
+        idToken: token,
+        audience: googleConfigConstants.GOOGLE_ID,
+      });
+
+      return tokenVerifyResult?.getPayload();
+    } catch (err) {
+      throw new BadRequestException('Google authorize token is not valid');
     }
   }
 
