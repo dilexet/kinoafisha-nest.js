@@ -1,27 +1,30 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Movie } from '../database/entity/movie';
 import { MovieDto } from './dto/movie.dto';
 import { Genre } from '../database/entity/genre';
 import { Country } from '../database/entity/country';
 import { MovieViewDto } from './dto/movie-view.dto';
 import { CountryRepository } from '../database/repository/country.repository';
+import { MovieRepository } from '../database/repository/movie.repository';
+import { GenreRepository } from '../database/repository/genre.repository';
 
 @Injectable()
 export class MovieManagementService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
-    @InjectRepository(Movie) private movieRepository: Repository<Movie>,
-    @InjectRepository(Genre) private genreRepository: Repository<Genre>,
+    private movieRepository: MovieRepository,
+    private genreRepository: GenreRepository,
     private countryRepository: CountryRepository,
   ) {
   }
 
   async createAsync(movieDto: MovieDto): Promise<MovieViewDto> {
-    const movieExist = await this.movieRepository.findOneBy({ name: movieDto.name });
+    const movieExist = await this.movieRepository
+      .getOne()
+      .where(x => x.name)
+      .equal(movieDto.name);
     if (movieExist) {
       throw new BadRequestException('Movie with this name is exist');
     }
@@ -29,7 +32,7 @@ export class MovieManagementService {
     const movie: Movie = this.mapper.map(movieDto, MovieDto, Movie);
     movie.genres = await this.createGenresAsync(movieDto.genres);
     movie.countries = await this.createCountriesAsync(movieDto.countries);
-    const movieCreated = await this.movieRepository.save(movie);
+    const movieCreated = await this.movieRepository.create(movie);
     if (!movieCreated) {
       throw new InternalServerErrorException('Error while creating movie');
     }
@@ -39,12 +42,15 @@ export class MovieManagementService {
 
 
   async updateAsync(id: string, movieDto: MovieDto): Promise<MovieViewDto> {
-    const movieNameExist = await this.movieRepository.findOneBy({ name: movieDto.name });
+    const movieNameExist = await this.movieRepository
+      .getOne()
+      .where(x => x.name)
+      .equal(movieDto.name);
     if (movieNameExist && movieNameExist.id != id) {
       throw new BadRequestException('Movie with this name is exist');
     }
 
-    const movieExist = await this.movieRepository.findOneBy({ id: id });
+    const movieExist = await this.movieRepository.getById(id);
     if (!movieExist) {
       throw new BadRequestException('Movie is now exist');
     }
@@ -53,7 +59,7 @@ export class MovieManagementService {
     movie.id = id;
     movie.genres = await this.createGenresAsync(movieDto.genres);
     movie.countries = await this.createCountriesAsync(movieDto.countries);
-    const movieUpdated = await this.movieRepository.save(movie);
+    const movieUpdated = await this.movieRepository.update(movie);
     if (!movieUpdated) {
       throw new InternalServerErrorException('Error while updating movie');
     }
@@ -70,17 +76,26 @@ export class MovieManagementService {
     }
   }
 
-  async findAllAsync(): Promise<MovieViewDto[]> {
-    const movies = await this.movieRepository.find(
-      { relations: { genres: true, countries: true } });
+  async findAllAsync(name: string): Promise<MovieViewDto[]> {
+    const moviesQuery = this.movieRepository
+      .getAll()
+      .include(x => x.genres)
+      .include(x => x.countries);
+    const movies = name
+      ? await moviesQuery
+        .where(x => x.name)
+        .contains(name, { matchCase: false })
+      : await moviesQuery;
+
+
     return this.mapper.mapArray(movies, Movie, MovieViewDto);
   }
 
   async findOneByIdAsync(id: string): Promise<MovieViewDto> {
-    const movie = await this.movieRepository.findOne({
-      where: { id: id },
-      relations: { genres: true, countries: true },
-    });
+    const movie = await this.movieRepository
+      .getById(id)
+      .include(x => x.genres)
+      .include(x => x.countries);
     if (!movie) {
       throw new NotFoundException('Movie is not exist');
     }
@@ -91,7 +106,7 @@ export class MovieManagementService {
   private async createGenresAsync(genreIds: string[]): Promise<Genre[]> {
     const genresArray: Genre[] = [];
     for (const id of genreIds) {
-      const genreExist = await this.genreRepository.findOneBy({ id: id });
+      const genreExist = await this.genreRepository.getById(id);
       if (!genreExist) {
         throw new BadRequestException('Genre is not exist');
       }

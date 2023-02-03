@@ -1,7 +1,7 @@
 import {
-  Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res,
+  Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MovieManagementService } from './movie-management.service';
 import { Response } from 'express';
 import { MovieDto } from './dto/movie.dto';
@@ -38,9 +38,14 @@ export class MovieManagementController {
     return res.status(HttpStatus.OK).json(result);
   }
 
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    required: false,
+  })
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.movieManagementService.findAllAsync();
+  async findAll(@Res() res: Response, @Query('name') name?: string) {
+    const result = await this.movieManagementService.findAllAsync(name);
     return res.status(HttpStatus.OK).json(result);
   }
 

@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put, Query } from '@nestjs/common';
 import { CinemaManagementService } from './cinema-management.service';
 import { CinemaDto } from './dto/cinema.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @ApiTags('Cinema management')
@@ -34,9 +34,14 @@ export class CinemaManagementController {
     return res.status(HttpStatus.OK).json(result);
   }
 
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    required: false,
+  })
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.cinemaManagementService.findAllAsync();
+  async findAll(@Res() res: Response, @Query('name') name?: string) {
+    const result = await this.cinemaManagementService.findAllAsync(name);
     return res.status(HttpStatus.OK).json(result);
   }
 

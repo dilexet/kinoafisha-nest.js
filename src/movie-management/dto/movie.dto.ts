@@ -42,7 +42,7 @@ export class MovieDto {
     default: ['c969159d-f715-4e49-9ebe-6e4e403f06a3', '49adb16f-7024-4ef7-aed4-be982ccf38c2'],
   })
   @IsArray()
-  @IsUUID('4', { each: true })
+  @IsUUID(4, { each: true })
   @IsNotEmpty({ each: true })
   genres: string[];
 

@@ -15,7 +15,9 @@ export class Hall {
   name: string;
 
   @ManyToOne(() => Cinema,
-    cinema => cinema.halls)
+    cinema => cinema.halls,
+    { onDelete: 'CASCADE' },
+  )
   cinema: Cinema;
 
   @OneToMany(() => Session,

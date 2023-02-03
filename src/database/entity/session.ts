@@ -24,13 +24,13 @@ export class Session {
 
   @ManyToOne(() => Movie,
     movie => movie.sessions,
-    { cascade: true })
+    { cascade: true, onDelete: 'SET NULL' })
   @AutoMap()
   movie: Movie;
 
   @ManyToOne(() => Hall,
     hall => hall.sessions,
-    { cascade: true })
+    { cascade: true, onDelete: 'SET NULL' })
   @AutoMap()
   hall: Hall;
 

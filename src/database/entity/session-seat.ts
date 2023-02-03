@@ -17,7 +17,7 @@ export class SessionSeat {
 
   @ManyToOne(() => Seat,
     seat => seat.sessionSeats,
-    { cascade: true })
+    { cascade: true, onDelete: 'SET NULL' })
   @AutoMap()
   seat: Seat;
 
