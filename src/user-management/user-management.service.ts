@@ -2,10 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { UserDto } from './dto/user.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from '../database/entity/user';
-import { Role } from '../database/entity/role';
 import { UserViewDto } from './dto/user-view.dto';
 import { UserCreateDto } from './dto/user-create.dto';
 import * as bcrypt from 'bcrypt';
@@ -13,31 +10,31 @@ import * as uuid from 'uuid';
 import appConfigConstants from '../shared/constants/app-config.constants';
 import { MailService } from '../mail/mail.service';
 import RoleEnum from '../shared/enums/role.enum';
-import { UserLockStatus } from '../shared/enums/user-lock-status.enum';
 import { UserProfile } from '../database/entity/user-profile';
+import { UserRepository } from '../database/repository/user.repository';
+import { RoleRepository } from '../database/repository/role.repository';
 
 @Injectable()
 export class UserManagementService {
   constructor(
     private mailService: MailService,
     @InjectMapper() private readonly mapper: Mapper,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository,
   ) {
   }
 
   async create(userDto: UserCreateDto) {
-    const userEmailExist = await this.userRepository.findOne(
-      {
-        where: { email: userDto.email },
-        relations: { role: false },
-      },
-    );
+    const userEmailExist = await this.userRepository
+      .getOne()
+      .where(x => x.email)
+      .equal(userDto.email);
+
     if (userEmailExist) {
       throw new BadRequestException('User with this email already exist');
     }
 
-    const role = await this.roleRepository.findOneBy({ id: userDto.roleId });
+    const role = await this.roleRepository.getById(userDto.roleId);
     if (!role) {
       throw new NotFoundException('Role is not exist');
     }
@@ -50,7 +47,7 @@ export class UserManagementService {
     user.activationLink = activationLink;
     user.role = role;
     user.userProfile = new UserProfile();
-    const userCreated = await this.userRepository.save(user);
+    const userCreated = await this.userRepository.create(user);
 
     if (!userCreated) {
       throw new InternalServerErrorException('Error while creating user');
@@ -70,34 +67,23 @@ export class UserManagementService {
   }
 
   async update(id: string, userDto: UserDto) {
-    const userEmailExist = await this.userRepository.findOne(
-      {
-        where: { email: userDto.email },
-        relations: { role: false },
-      },
-    );
+    const userEmailExist = await this.userRepository
+      .getOne()
+      .where(x => x.email)
+      .equal(userDto.email);
 
     if (userEmailExist && userEmailExist.id != id) {
       throw new BadRequestException('User with this email already exist');
     }
 
-    const user = await this.userRepository.findOne(
-      {
-        where: { id: id },
-        relations: { role: true },
-      },
-    );
+    const user = await this.userRepository.getById(id);
 
     if (!user) {
       throw new NotFoundException('User is not exist');
     }
 
-    const role = await this.roleRepository.findOne(
-      {
-        where: { id: userDto.roleId },
-        relations: { users: false },
-      },
-    );
+    const role = await this.roleRepository.getById(userDto.roleId);
+
     if (!role) {
       throw new NotFoundException('Role is not exist');
     }
@@ -110,7 +96,7 @@ export class UserManagementService {
     user.email = userDto.email;
     user.role = role;
 
-    const userUpdated = await this.userRepository.save(user);
+    const userUpdated = await this.userRepository.update(user);
     if (!userUpdated) {
       throw new InternalServerErrorException('Error while updating user');
     }
@@ -128,30 +114,23 @@ export class UserManagementService {
     }
   }
 
-  async changeLockStatus(id: string, lockStatus: UserLockStatus): Promise<UserViewDto> {
-    const user = await this.userRepository.findOne(
-      {
-        where: { id: id },
-        relations: { role: true },
-      },
-    );
+  async changeLockStatus(id: string): Promise<UserViewDto> {
+    const user = await this.userRepository
+      .getById(id)
+      .include(x => x.role);
+
     if (!user) {
       throw new NotFoundException('User is not exist');
     }
 
-    const shouldBlock = lockStatus == UserLockStatus.BLOCK;
+    const newStatus = !user.isBlocked;
 
-    if (user.isBlocked == shouldBlock) {
-      throw new BadRequestException(
-        `User already ${shouldBlock ? 'blocked' : 'unlocked'}`);
-    }
-
-    if (user.role.name == RoleEnum.Admin && shouldBlock) {
+    if (user.role.name == RoleEnum.Admin && newStatus) {
       await this.checkLastAdmin(RoleEnum.Admin);
     }
 
-    user.isBlocked = shouldBlock;
-    const userBlocked = await this.userRepository.save(user);
+    user.isBlocked = newStatus;
+    const userBlocked = await this.userRepository.update(user);
     if (!userBlocked) {
       throw new InternalServerErrorException('Error while change user lock status');
     }
@@ -159,21 +138,23 @@ export class UserManagementService {
     return this.mapper.map(userBlocked, User, UserViewDto);
   }
 
-  async findAll(): Promise<UserViewDto[]> {
-    const users = await this.userRepository.find(
-      { relations: { role: true } },
-    );
+  async findAll(name: string): Promise<UserViewDto[]> {
+    const usersQuery = this.userRepository
+      .getAll()
+      .include(x => x.role);
+    const users = name
+      ? await usersQuery
+        .where(x => x.name)
+        .contains(name, { matchCase: false })
+      : await usersQuery;
 
     return this.mapper.mapArray(users, User, UserViewDto);
   }
 
   async findOne(id: string): Promise<UserViewDto> {
-    const user = await this.userRepository.findOne(
-      {
-        where: { id: id },
-        relations: { role: true },
-      },
-    );
+    const user = await this.userRepository
+      .getById(id)
+      .include(x => x.role);
 
     if (!user) {
       throw new NotFoundException('User is not exist');
@@ -183,8 +164,14 @@ export class UserManagementService {
   }
 
   private async checkLastAdmin(roleName: string) {
-    const isLastAdmin = await this.userRepository.count(
-      { where: { role: { name: roleName }, isBlocked: false }, relations: { role: true } }) <= 1;
+    const isLastAdmin = await this.userRepository
+      .getAll()
+      .include(x => x.role)
+      .where(x => x.isBlocked)
+      .isFalse()
+      .where(x => x.role.name)
+      .equal(roleName)
+      .count() <= 1;
     if (isLastAdmin) {
       throw new BadRequestException('You cannot remove the last admin');
     }

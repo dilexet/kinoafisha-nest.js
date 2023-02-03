@@ -22,6 +22,7 @@ export class User {
   @Column({ nullable: true })
   passwordHash: string;
 
+  @AutoMap()
   @Column({ default: AuthProviderEnum.LOCAL })
   provider: string;
 

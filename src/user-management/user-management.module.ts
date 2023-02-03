@@ -6,13 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../database/entity/user';
 import { Role } from '../database/entity/role';
 import { MailService } from '../mail/mail.service';
+import { UserRepository } from '../database/repository/user.repository';
+import { RoleRepository } from '../database/repository/role.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),
   ],
   controllers: [UserManagementController],
-  providers: [MailService, UserManagementService, UserManagementMapperProfile],
+  providers: [MailService, UserManagementService, UserManagementMapperProfile, UserRepository, RoleRepository],
 })
 export class UserManagementModule {
 }

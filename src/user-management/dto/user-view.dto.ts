@@ -12,6 +12,9 @@ export class UserViewDto {
   email: string;
 
   @AutoMap()
+  provider: string;
+
+  @AutoMap()
   isActivated: boolean;
 
   @AutoMap()

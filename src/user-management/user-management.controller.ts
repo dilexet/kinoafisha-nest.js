@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch, Query } from '@nestjs/common';
 import { UserManagementService } from './user-management.service';
 import { UserDto } from './dto/user.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserCreateDto } from './dto/user-create.dto';
-import { LockStatusDto } from './dto/lock-status.dto';
 
 @ApiTags('User management')
 @Controller('user-management')
@@ -31,11 +30,8 @@ export class UserManagementController {
   }
 
   @Patch(':id')
-  @ApiBody({
-    type: LockStatusDto,
-  })
-  async changeLockStatus(@Res() res: Response, @Param('id') id: string, @Body() lookStatus: LockStatusDto) {
-    const result = await this.userManagementService.changeLockStatus(id, lookStatus.lockStatus);
+  async changeLockStatus(@Res() res: Response, @Param('id') id: string) {
+    const result = await this.userManagementService.changeLockStatus(id);
     return res.status(HttpStatus.OK).json(result);
   }
 
@@ -46,9 +42,14 @@ export class UserManagementController {
 
   }
 
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    required: false,
+  })
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.userManagementService.findAll();
+  async findAll(@Res() res: Response, @Query('name') name?: string) {
+    const result = await this.userManagementService.findAll(name);
     return res.status(HttpStatus.OK).json(result);
 
   }
