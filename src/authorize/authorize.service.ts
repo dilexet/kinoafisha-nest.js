@@ -4,8 +4,6 @@ import {
   InternalServerErrorException, NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import { Mapper } from '@automapper/core';
@@ -17,10 +15,11 @@ import { TokenService } from './utils/token.service';
 import { LoginDto } from './dto/login.dto';
 import { TokenDto } from './dto/token.dto';
 import appConfigConstants from '../shared/constants/app-config.constants';
-import { Role } from '../database/entity/role';
 import RoleEnum from '../shared/enums/role.enum';
 import { AuthProviderEnum } from '../shared/enums/auth-provider.enum';
 import { UserProfile } from '../database/entity/user-profile';
+import { UserRepository } from '../database/repository/user.repository';
+import { RoleRepository } from '../database/repository/role.repository';
 
 @Injectable()
 export class AuthorizeService {
@@ -28,13 +27,14 @@ export class AuthorizeService {
     private mailService: MailService,
     private tokenService: TokenService,
     @InjectMapper() private readonly mapper: Mapper,
-    @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Role) private roleRepository: Repository<Role>,
+    private userRepository: UserRepository,
+    private roleRepository: RoleRepository,
   ) {
   }
 
   async loginAsync(userDto: LoginDto) {
-    const user = await this.userRepository.findOneBy({ email: userDto.email });
+    const user = await this.userRepository.getOne()
+      .where(x => x.email).equal(userDto.email);
     if (!user) {
       throw new BadRequestException('User is not exist');
     }
@@ -59,12 +59,14 @@ export class AuthorizeService {
   }
 
   async registrationAsync(userDto: RegisterDto) {
-    const candidate = await this.userRepository.findOneBy({ email: userDto.email });
+    const candidate = await this.userRepository.getOne()
+      .where(x => x.email).equal(userDto.email);
     if (candidate) {
       throw new BadRequestException('User with this email already exist');
     }
 
-    const role = await this.roleRepository.findOneBy({ name: RoleEnum.User });
+    const role = await this.roleRepository.getOne()
+      .where(x => x.name).equal(RoleEnum.User);
     if (!role) {
       throw new NotFoundException('Role is not exist');
     }
@@ -80,7 +82,7 @@ export class AuthorizeService {
       newUser.userProfile = new UserProfile();
 
 
-      const user = await this.userRepository.save(newUser);
+      const user = await this.userRepository.create(newUser);
 
       const tokens = await this.tokenService.generateTokensAsync(user);
 
@@ -113,7 +115,7 @@ export class AuthorizeService {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userRepository.getById(userId);
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -137,14 +139,15 @@ export class AuthorizeService {
   }
 
   async activateAsync(activationLink: string) {
-    const user = await this.userRepository.findOneBy({ activationLink: activationLink });
+    const user = await this.userRepository.getOne()
+      .where(x => x.activationLink).equal(activationLink);
     if (!user) {
       throw new BadRequestException('Incorrect activation link');
     }
 
     user.isActivated = true;
     try {
-      await this.userRepository.save(user);
+      await this.userRepository.update(user);
     } catch (err) {
       throw new InternalServerErrorException('Activation error');
     }
@@ -154,7 +157,8 @@ export class AuthorizeService {
     const tokenPayload = await this.tokenService.verifyGoogleToken(token);
     const { name, email } = tokenPayload;
 
-    const candidate = await this.userRepository.findOneBy({ email: email });
+    const candidate = await this.userRepository
+      .getOne().where(x => x.email).equal(email);
 
     if (!candidate) {
       return await this.registerGoogleUser(name, email);
@@ -172,7 +176,7 @@ export class AuthorizeService {
   }
 
   private async registerGoogleUser(name: string, email: string) {
-    const role = await this.roleRepository.findOneBy({ name: RoleEnum.User });
+    const role = await this.roleRepository.getOne().where(x => x.name).equal(RoleEnum.User);
     if (!role) {
       throw new InternalServerErrorException('You did not create roles');
     }
@@ -185,7 +189,7 @@ export class AuthorizeService {
     newUser.provider = AuthProviderEnum.GOOGLE;
     newUser.userProfile = new UserProfile();
 
-    const userCreated = await this.userRepository.save(newUser);
+    const userCreated = await this.userRepository.create(newUser);
 
     if (!userCreated) {
       throw new BadRequestException('Error while creating google user');

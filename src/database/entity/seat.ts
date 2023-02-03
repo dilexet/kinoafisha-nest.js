@@ -1,15 +1,12 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { Row } from './row';
 import { SeatType } from './seat-type';
 import { AutoMap } from '@automapper/classes';
 import { SessionSeat } from './session-seat';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class Seat {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class Seat extends BaseEntity {
   @Column()
   @AutoMap()
   numberSeat: number;
@@ -19,8 +16,7 @@ export class Seat {
   price: number;
 
   @ManyToOne(() => Row,
-    row => row.seats,
-    { onDelete: 'CASCADE' })
+    row => row.seats)
   row: Row;
 
   @ManyToOne(() => SeatType,

@@ -69,7 +69,10 @@ export class MovieManagementService {
 
   async removeAsync(id: string): Promise<string> {
     try {
-      await this.movieRepository.delete(id);
+      const existMovie = await this.movieRepository.getById(id).include(x => x.sessions);
+      existMovie.deleted = true;
+      existMovie.sessions = existMovie.sessions.map(session => ({ ...session, deleted: true }));
+      await this.movieRepository.update(existMovie);
       return id;
     } catch (err) {
       throw new BadRequestException('Movie is not exist');
@@ -106,7 +109,7 @@ export class MovieManagementService {
   private async createGenresAsync(genreIds: string[]): Promise<Genre[]> {
     const genresArray: Genre[] = [];
     for (const id of genreIds) {
-      const genreExist = await this.genreRepository.getById(id);
+      const genreExist = await this.genreRepository.getById(id)
       if (!genreExist) {
         throw new BadRequestException('Genre is not exist');
       }

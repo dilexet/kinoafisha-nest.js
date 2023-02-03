@@ -8,13 +8,14 @@ import { Role } from '../database/entity/role';
 import { MailService } from '../mail/mail.service';
 import { UserRepository } from '../database/repository/user.repository';
 import { RoleRepository } from '../database/repository/role.repository';
+import { TokenRepository } from '../database/repository/token.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),
   ],
   controllers: [UserManagementController],
-  providers: [MailService, UserManagementService, UserManagementMapperProfile, UserRepository, RoleRepository],
+  providers: [MailService, UserManagementService, UserManagementMapperProfile, UserRepository, RoleRepository, TokenRepository],
 })
 export class UserManagementModule {
 }

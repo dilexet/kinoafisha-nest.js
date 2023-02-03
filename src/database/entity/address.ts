@@ -1,13 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Cinema } from './cinema';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class Address {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class Address extends BaseEntity {
   @Column()
   @AutoMap()
   country: string;

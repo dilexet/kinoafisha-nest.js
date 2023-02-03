@@ -1,15 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { Hall } from './hall';
 import { Movie } from './movie';
 import { SessionSeat } from './session-seat';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class Session {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class Session extends BaseEntity {
   @Column({ type: 'timestamptz' })
   @AutoMap()
   startDate: Date;
@@ -24,13 +21,13 @@ export class Session {
 
   @ManyToOne(() => Movie,
     movie => movie.sessions,
-    { cascade: true, onDelete: 'SET NULL' })
+    { cascade: true })
   @AutoMap()
   movie: Movie;
 
   @ManyToOne(() => Hall,
     hall => hall.sessions,
-    { cascade: true, onDelete: 'SET NULL' })
+    { cascade: true })
   @AutoMap()
   hall: Hall;
 

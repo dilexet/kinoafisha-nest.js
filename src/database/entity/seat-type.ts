@@ -1,13 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { Seat } from './seat';
 import { AutoMap } from '@automapper/classes';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class SeatType {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class SeatType extends BaseEntity {
   @Column()
   @AutoMap()
   name: string;

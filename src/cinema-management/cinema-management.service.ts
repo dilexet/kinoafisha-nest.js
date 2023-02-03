@@ -62,9 +62,12 @@ export class CinemaManagementService {
     try {
       const cinemaExist = await this.cinemaRepository
         .getById(id)
-        .include(x => x.address);
-      await this.cinemaRepository.delete(id);
-      await this.addressRepository.delete(cinemaExist.address.id);
+        .include(x => x.address)
+        .include(x => x.halls);
+      cinemaExist.deleted = true;
+      cinemaExist.address.deleted = true;
+      cinemaExist.halls = cinemaExist.halls.map(hall => ({ ...hall, deleted: true }));
+      await this.cinemaRepository.update(cinemaExist);
       return id;
     } catch (err) {
       console.log(err);

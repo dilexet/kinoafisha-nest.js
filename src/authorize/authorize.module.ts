@@ -13,6 +13,8 @@ import jwtConfigConstants from './constants/jwt-config.constants';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RoleGuard } from './guards/role.guard';
+import { UserRepository } from '../database/repository/user.repository';
+import { RoleRepository } from '../database/repository/role.repository';
 
 @Module({
   imports: [
@@ -33,7 +35,10 @@ import { RoleGuard } from './guards/role.guard';
     MailService,
     JwtService,
     TokenService,
-    AuthorizeService],
+    AuthorizeService,
+    UserRepository,
+    RoleRepository,
+  ],
 })
 export class AuthorizeModule {
 }

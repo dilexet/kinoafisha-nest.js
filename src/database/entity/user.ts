@@ -1,16 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne, OneToOne } from 'typeorm';
 import { Role } from './role';
 import { Token } from './token';
 import { AutoMap } from '@automapper/classes';
 import { AuthProviderEnum } from '../../shared/enums/auth-provider.enum';
 import { UserProfile } from './user-profile';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class User {
-  @AutoMap()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends BaseEntity {
   @AutoMap()
   @Column()
   name: string;
@@ -48,6 +45,7 @@ export class User {
     { eager: true })
   role: Role;
 
-  @OneToMany(() => Token, token => token.user)
+  @OneToMany(() => Token,
+      token => token.user)
   tokens: Token[];
 }

@@ -1,17 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
-import { AutoMap } from '@automapper/classes';
+import { Entity, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { BookedOrder } from './booked-order';
 import { User } from './user';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class UserProfile {
-  @AutoMap()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class UserProfile extends BaseEntity {
   @OneToOne(() => User,
-    user => user.userProfile,
-    { onDelete: 'CASCADE' })
+    user => user.userProfile)
   @JoinColumn()
   user: User;
 

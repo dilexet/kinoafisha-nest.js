@@ -1,19 +1,15 @@
 import {
   Column, Entity,
-  ManyToMany, PrimaryGeneratedColumn,
-  JoinTable, OneToMany,
+  ManyToMany, JoinTable, OneToMany,
 } from 'typeorm';
 import { Genre } from './genre';
 import { Country } from './country';
 import { AutoMap } from '@automapper/classes';
 import { Session } from './session';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class Movie {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class Movie extends BaseEntity {
   @Column()
   @AutoMap()
   name: string;

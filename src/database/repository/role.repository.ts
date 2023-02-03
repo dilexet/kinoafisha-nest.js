@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { LinqRepository } from 'typeorm-linq-repository';
+import { IQuery, LinqRepository } from 'typeorm-linq-repository';
 import { Role } from '../entity/role';
 
 @Injectable()
@@ -11,5 +11,17 @@ export class RoleRepository extends LinqRepository<Role> {
       dataSource: DataSource,
   ) {
     super(dataSource, Role);
+  }
+
+  getById(id: number | string): IQuery<Role, Role> {
+    return super.getById(id).where(x => x.deleted).isFalse();
+  }
+
+  getOne(): IQuery<Role, Role> {
+    return super.getOne().where(x => x.deleted).isFalse();
+  }
+
+  getAll(): IQuery<Role, Role[]> {
+    return super.getAll().where(x => x.deleted).isFalse();
   }
 }

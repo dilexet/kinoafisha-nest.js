@@ -1,13 +1,10 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany } from 'typeorm';
 import { Movie } from './movie';
 import { AutoMap } from '@automapper/classes';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class Genre {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class Genre extends BaseEntity {
   @Column()
   @AutoMap()
   name: string;

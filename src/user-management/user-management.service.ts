@@ -13,6 +13,7 @@ import RoleEnum from '../shared/enums/role.enum';
 import { UserProfile } from '../database/entity/user-profile';
 import { UserRepository } from '../database/repository/user.repository';
 import { RoleRepository } from '../database/repository/role.repository';
+import { TokenRepository } from '../database/repository/token.repository';
 
 @Injectable()
 export class UserManagementService {
@@ -21,6 +22,7 @@ export class UserManagementService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
+    private readonly tokenRepository: TokenRepository,
   ) {
   }
 
@@ -105,11 +107,20 @@ export class UserManagementService {
   }
 
   async remove(id: string): Promise<string> {
-    await this.checkLastAdmin(RoleEnum.Admin);
+    const user = await this.userRepository
+      .getById(id)
+      .include(x => x.role);
+    if (user.role.name == RoleEnum.Admin) {
+      await this.checkLastAdmin(RoleEnum.Admin);
+    }
     try {
-      await this.userRepository.delete(id);
+      user.deleted = true;
+      user.userProfile.deleted = true;
+      await this.tokenRepository.delete(user.tokens);
+      await this.userRepository.update(user);
       return id;
     } catch (err) {
+      console.log(err);
       throw new BadRequestException('User is not exist');
     }
   }

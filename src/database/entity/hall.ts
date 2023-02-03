@@ -1,23 +1,18 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { Cinema } from './cinema';
 import { Row } from './row';
 import { AutoMap } from '@automapper/classes';
 import { Session } from './session';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class Hall {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class Hall extends BaseEntity {
   @Column()
   @AutoMap()
   name: string;
 
   @ManyToOne(() => Cinema,
-    cinema => cinema.halls,
-    { onDelete: 'CASCADE' },
-  )
+    cinema => cinema.halls)
   cinema: Cinema;
 
   @OneToMany(() => Session,

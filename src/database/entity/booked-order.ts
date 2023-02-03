@@ -1,14 +1,11 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { AutoMap } from '@automapper/classes';
 import { SessionSeat } from './session-seat';
 import { UserProfile } from './user-profile';
+import { BaseEntity } from './base-entity';
 
 @Entity()
-export class BookedOrder {
-  @PrimaryGeneratedColumn('uuid')
-  @AutoMap()
-  id: string;
-
+export class BookedOrder extends BaseEntity {
   @Column({ type: 'decimal' })
   @AutoMap()
   totalPrice: number;
