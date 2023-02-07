@@ -19,7 +19,7 @@ export class UserManagementMapperProfile extends AutomapperProfile {
       createMap(mapper, Role, RoleViewDto);
       createMap(mapper, User, UserViewDto,
         forMember(dest => dest.role,
-          mapFrom(source => source.role)),
+          mapFrom(source => mapper.map(source.role, Role, RoleViewDto))),
       );
     };
   }

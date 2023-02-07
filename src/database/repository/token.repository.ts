@@ -14,7 +14,7 @@ export class TokenRepository extends LinqRepository<Token> {
   }
 
   getById(id: number | string): IQuery<Token, Token> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Token, Token> {

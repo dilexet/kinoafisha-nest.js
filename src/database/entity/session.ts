@@ -21,13 +21,13 @@ export class Session extends BaseEntity {
 
   @ManyToOne(() => Movie,
     movie => movie.sessions,
-    { cascade: true })
+    { cascade: true, onDelete: 'CASCADE' })
   @AutoMap()
   movie: Movie;
 
   @ManyToOne(() => Hall,
     hall => hall.sessions,
-    { cascade: true })
+    { cascade: true, onDelete: 'CASCADE' })
   @AutoMap()
   hall: Hall;
 

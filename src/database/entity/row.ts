@@ -11,7 +11,7 @@ export class Row extends BaseEntity {
   numberRow: number;
 
   @ManyToOne(() => Hall,
-    hall => hall.rows)
+    hall => hall.rows, { onDelete: 'CASCADE' })
   hall: Hall;
 
   @OneToMany(() => Seat,

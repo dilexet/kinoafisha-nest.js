@@ -14,7 +14,7 @@ export class HallRepository extends LinqRepository<Hall> {
   }
 
   getById(id: number | string): IQuery<Hall, Hall> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Hall, Hall> {

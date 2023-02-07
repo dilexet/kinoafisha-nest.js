@@ -14,7 +14,7 @@ export class CinemaRepository extends LinqRepository<Cinema> {
   }
 
   getById(id: number | string): IQuery<Cinema, Cinema> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Cinema, Cinema> {

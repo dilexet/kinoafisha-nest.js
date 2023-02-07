@@ -60,10 +60,6 @@ export class SessionManagementMapperProfile extends AutomapperProfile {
 
 
       createMap(mapper, Session, SessionDetailsViewDto,
-        forMember(dest => dest.sessionData.startDate,
-          mapFrom(source => convertDate(source.startDate))),
-        forMember(dest => dest.sessionData.endDate,
-          mapFrom(source => convertDate(source.endDate))),
         forMember(dest => dest.sessionData,
           mapFrom(source => mapper.map(source, Session, SessionViewDto))),
         forMember(dest => dest.sessionSeats,

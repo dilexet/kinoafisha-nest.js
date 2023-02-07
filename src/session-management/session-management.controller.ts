@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch, Query } from '@nestjs/common';
 import { SessionManagementService } from './session-management.service';
 import { SessionCreateDto } from './dto/session-create.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { SessionUpdateDto } from './dto/session-update.dto';
 
@@ -41,9 +41,14 @@ export class SessionManagementController {
     return res.status(HttpStatus.OK).json(result);
   }
 
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    required: false,
+  })
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.sessionManagementService.findAll();
+  async findAll(@Res() res: Response, @Query('name') name?: string) {
+    const result = await this.sessionManagementService.findAll(name);
     return res.status(HttpStatus.OK).json(result);
   }
 

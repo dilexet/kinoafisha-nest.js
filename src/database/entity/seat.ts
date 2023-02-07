@@ -16,7 +16,7 @@ export class Seat extends BaseEntity {
   price: number;
 
   @ManyToOne(() => Row,
-    row => row.seats)
+    row => row.seats, { onDelete: 'CASCADE' })
   row: Row;
 
   @ManyToOne(() => SeatType,

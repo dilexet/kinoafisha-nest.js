@@ -12,6 +12,7 @@ import { SeatTypeViewDto } from '../dto/seat-type-view.dto';
 import { SeatViewDto } from '../dto/seat-view.dto';
 import { RowViewDto } from '../dto/row-view.dto';
 import { HallViewDto } from '../dto/hall-view.dto';
+import { HallViewDetailsDto } from '../dto/hall-view-details.dto';
 
 @Injectable()
 export class HallManagementMapperProfile extends AutomapperProfile {
@@ -41,13 +42,28 @@ export class HallManagementMapperProfile extends AutomapperProfile {
       createMap(mapper, SeatType, SeatTypeViewDto);
       createMap(mapper, Seat, SeatViewDto,
         forMember(dest => dest.seatType,
-          mapFrom(source => source.seatType)),
+          mapFrom(source => mapper.map(source.seatType, SeatType, SeatTypeViewDto))),
       );
       createMap(mapper, Row, RowViewDto,
         forMember(dest => dest.seats,
           mapFrom(source => mapper.mapArray(source.seats, Seat, SeatViewDto))),
       );
       createMap(mapper, Hall, HallViewDto,
+        forMember(dest => dest.cinemaId,
+          mapFrom(source => source.cinema.id)),
+        forMember(dest => dest.cinemaName,
+          mapFrom(source => source.cinema.name)),
+        forMember(dest => dest.numberOfRows,
+          mapFrom(source => source.rows.length)),
+        forMember(dest => dest.numberOfSeats,
+          mapFrom(source => {
+            let size = 0;
+            source.rows.forEach(x => size += x.seats.length);
+            return size;
+          })),
+      );
+
+      createMap(mapper, Hall, HallViewDetailsDto,
         forMember(dest => dest.rows,
           mapFrom(source => mapper.mapArray(source.rows, Row, RowViewDto))),
         forMember(dest => dest.cinemaId,

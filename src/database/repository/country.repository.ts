@@ -14,7 +14,7 @@ export class CountryRepository extends LinqRepository<Country> {
   }
 
   getById(id: number | string): IQuery<Country, Country> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Country, Country> {

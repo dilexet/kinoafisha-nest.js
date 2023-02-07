@@ -12,14 +12,17 @@ export class SessionSeat extends BaseEntity {
   @AutoMap()
   ticketState: TicketState;
 
+  @Column({ type: 'timestamptz', nullable: true, default: null })
+  blockedTime: Date;
+
   @ManyToOne(() => Seat,
     seat => seat.sessionSeats,
-    { cascade: true })
+    { cascade: true, onDelete: 'CASCADE' })
   @AutoMap()
   seat: Seat;
 
   @ManyToOne(() => Session,
-    session => session.sessionSeats)
+    session => session.sessionSeats, { onDelete: 'CASCADE' })
   session: Session;
 
   @ManyToOne(() => BookedOrder,

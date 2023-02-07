@@ -7,6 +7,11 @@ import { Session } from '../database/entity/session';
 import { SessionSeat } from '../database/entity/session-seat';
 import { Movie } from '../database/entity/movie';
 import { Hall } from '../database/entity/hall';
+import { HallRepository } from '../database/repository/hall.repository';
+import { MovieRepository } from '../database/repository/movie.repository';
+import { SessionRepository } from '../database/repository/session.repository';
+import { SessionSeatRepository } from '../database/repository/session-seat.repository';
+import { BookedOrderRepository } from '../database/repository/booked-order.repository';
 
 @Module({
   imports: [
@@ -16,7 +21,10 @@ import { Hall } from '../database/entity/hall';
     ]),
   ],
   controllers: [SessionManagementController],
-  providers: [SessionManagementMapperProfile, SessionManagementService],
+  providers: [SessionManagementMapperProfile, SessionManagementService,
+    HallRepository, MovieRepository, SessionRepository, SessionSeatRepository,
+    BookedOrderRepository,
+  ],
 })
 export class SessionManagementModule {
 }

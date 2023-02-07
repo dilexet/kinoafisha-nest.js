@@ -1,14 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Token } from '../../database/entity/token';
-import { Repository, LessThanOrEqual } from 'typeorm';
 import jwtConfigConstants from '../constants/jwt-config.constants';
 import { User } from '../../database/entity/user';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OAuth2Client } from 'google-auth-library';
 import googleConfigConstants from '../constants/google-config.constants';
+import { TokenRepository } from '../../database/repository/token.repository';
+import { Token } from '../../database/entity/token';
 
 @Injectable()
 export class TokenService {
@@ -16,7 +15,7 @@ export class TokenService {
 
   constructor(
     private jwtService: JwtService,
-    @InjectRepository(Token) private tokenRepository: Repository<Token>,
+    private tokenRepository: TokenRepository,
   ) {
     this.oAuth2Client = new OAuth2Client(googleConfigConstants.GOOGLE_ID, googleConfigConstants.GOOGLE_SECRET);
   }
@@ -43,12 +42,11 @@ export class TokenService {
         secret: jwtConfigConstants.JWT_REFRESH_SECRET,
         expiresIn: jwtConfigConstants.JWT_REFRESH_EXPIRES_IN,
       });
-
-      await this.tokenRepository.save({
-        refreshToken: refreshToken,
-        expireDate: expireDate,
-        user: user,
-      });
+      const token = new Token();
+      token.refreshToken = refreshToken;
+      token.expireDate = expireDate;
+      token.user = user;
+      await this.tokenRepository.create(token);
       return {
         accessToken, refreshToken,
       };
@@ -66,8 +64,10 @@ export class TokenService {
       if (!refreshTokenData) {
         return null;
       }
-      const refreshToken = await this.tokenRepository.findOneBy(
-        { refreshToken: token });
+      const refreshToken = await this.tokenRepository
+        .getOne()
+        .where(x => x.refreshToken)
+        .equal(token, { matchCase: true });
       if (!refreshToken) {
         return null;
       }
@@ -80,7 +80,11 @@ export class TokenService {
 
   async removeTokenAsync(token: string) {
     try {
-      await this.tokenRepository.delete({ refreshToken: token });
+      const refreshToken = await this.tokenRepository
+        .getOne()
+        .where(x => x.refreshToken)
+        .equal(token, { matchCase: true });
+      await this.tokenRepository.delete(refreshToken);
     } catch (err) {
       throw new Error(err);
     }
@@ -101,12 +105,10 @@ export class TokenService {
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   private async clearRefreshTokens() {
-    const expireTokens = await this.tokenRepository.find(
-      {
-        where: { expireDate: LessThanOrEqual(new Date()) },
-        relations: { user: false },
-      },
-    );
+    const expireTokens = await this.tokenRepository
+      .getAll()
+      .where(x => x.expireDate)
+      .lessThanOrEqual(new Date());
     for (const expireToken of expireTokens) {
       await this.tokenRepository.delete(expireToken.id);
       console.log(expireToken.id);

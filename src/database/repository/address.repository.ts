@@ -14,7 +14,7 @@ export class AddressRepository extends LinqRepository<Address> {
   }
 
   getById(id: number | string): IQuery<Address, Address> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Address, Address> {

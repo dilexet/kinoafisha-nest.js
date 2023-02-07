@@ -15,6 +15,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RoleGuard } from './guards/role.guard';
 import { UserRepository } from '../database/repository/user.repository';
 import { RoleRepository } from '../database/repository/role.repository';
+import { TokenRepository } from '../database/repository/token.repository';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { RoleRepository } from '../database/repository/role.repository';
     AuthorizeService,
     UserRepository,
     RoleRepository,
+    TokenRepository
   ],
 })
 export class AuthorizeModule {

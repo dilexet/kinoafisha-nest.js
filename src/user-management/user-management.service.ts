@@ -32,6 +32,7 @@ export class UserManagementService {
       .where(x => x.email)
       .equal(userDto.email);
 
+    console.log(userEmailExist);
     if (userEmailExist) {
       throw new BadRequestException('User with this email already exist');
     }
@@ -78,7 +79,7 @@ export class UserManagementService {
       throw new BadRequestException('User with this email already exist');
     }
 
-    const user = await this.userRepository.getById(id);
+    const user = await this.userRepository.getById(id).include(x => x.role);
 
     if (!user) {
       throw new NotFoundException('User is not exist');
@@ -109,14 +110,18 @@ export class UserManagementService {
   async remove(id: string): Promise<string> {
     const user = await this.userRepository
       .getById(id)
-      .include(x => x.role);
-    if (user.role.name == RoleEnum.Admin) {
+      .include(x => x.role)
+      .include(x => x.userProfile)
+      .include(x => x.tokens);
+    if (user.role.name === RoleEnum.Admin) {
       await this.checkLastAdmin(RoleEnum.Admin);
     }
     try {
       user.deleted = true;
       user.userProfile.deleted = true;
-      await this.tokenRepository.delete(user.tokens);
+      if (user.tokens) {
+        await this.tokenRepository.delete(user.tokens);
+      }
       await this.userRepository.update(user);
       return id;
     } catch (err) {

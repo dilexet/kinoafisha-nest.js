@@ -14,7 +14,7 @@ export class RoleRepository extends LinqRepository<Role> {
   }
 
   getById(id: number | string): IQuery<Role, Role> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Role, Role> {

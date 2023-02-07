@@ -14,7 +14,7 @@ export class SeatRepository extends LinqRepository<Seat> {
   }
 
   getById(id: number | string): IQuery<Seat, Seat> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Seat, Seat> {

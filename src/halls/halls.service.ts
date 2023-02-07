@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
 import { HallViewDto } from './dto/hall-view.dto';
-import { CinemaRepository } from '../database/repository/cinema.repository';
 import { Hall } from '../database/entity/hall';
+import { CinemaRepository } from '../database/repository/cinema.repository';
 
 @Injectable()
 export class HallsService {
@@ -19,7 +19,13 @@ export class HallsService {
     }
     const cinema = await this.cinemaRepository
       .getById(cinemaId)
-      .include(x => x.halls);
-    return this.mapper.mapArray(cinema.halls, Hall, HallViewDto);
+      .include(x => x.halls)
+      .join(x => x.halls)
+      .where(x => x.deleted)
+      .isFalse();
+    if (!cinema || !cinema?.halls || cinema?.halls?.length <= 0) {
+      return [];
+    }
+    return this.mapper.mapArray(cinema?.halls, Hall, HallViewDto);
   }
 }

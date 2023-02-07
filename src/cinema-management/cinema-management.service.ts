@@ -3,10 +3,7 @@ import { CinemaDto } from './dto/cinema.dto';
 import { CinemaViewDto } from './dto/cinema-view.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Cinema } from '../database/entity/cinema';
-import { Repository } from 'typeorm';
-import { Address } from '../database/entity/address';
 import { CinemaRepository } from '../database/repository/cinema.repository';
 
 @Injectable()
@@ -14,7 +11,6 @@ export class CinemaManagementService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private readonly cinemaRepository: CinemaRepository,
-    @InjectRepository(Address) private readonly addressRepository: Repository<Address>,
   ) {
   }
 

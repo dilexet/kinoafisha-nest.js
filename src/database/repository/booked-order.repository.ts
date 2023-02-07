@@ -14,7 +14,7 @@ export class BookedOrderRepository extends LinqRepository<BookedOrder> {
   }
 
   getById(id: number | string): IQuery<BookedOrder, BookedOrder> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<BookedOrder, BookedOrder> {

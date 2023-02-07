@@ -14,7 +14,7 @@ export class GenreRepository extends LinqRepository<Genre> {
   }
 
   getById(id: number | string): IQuery<Genre, Genre> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<Genre, Genre> {

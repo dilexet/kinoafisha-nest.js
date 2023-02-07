@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, Res, Query } from '@nestjs/common';
 import { HallManagementService } from './hall-management.service';
 import { HallDto } from './dto/hall.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @ApiTags('Hall management')
@@ -34,9 +34,14 @@ export class HallManagementController {
     return res.status(HttpStatus.OK).json(result);
   }
 
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    required: false,
+  })
   @Get()
-  async findAll(@Res() res: Response) {
-    const result = await this.hallManagementService.findAll();
+  async findAll(@Res() res: Response, @Query('name') name?: string) {
+    const result = await this.hallManagementService.findAll(name);
     return res.status(HttpStatus.OK).json(result);
   }
 

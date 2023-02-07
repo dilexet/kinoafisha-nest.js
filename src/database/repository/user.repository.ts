@@ -14,14 +14,14 @@ export class UserRepository extends LinqRepository<User> {
   }
 
   getById(id: number | string): IQuery<User, User> {
-    return super.getById(id).where(x => x.deleted).isFalse();
+    return super.getById(id).and(x => x.deleted).isFalse();
   }
 
   getOne(): IQuery<User, User> {
-    return super.getOne().where(x => x.deleted).isFalse();
+    return super.getOne().and(x => x.deleted).isFalse();
   }
 
   getAll(): IQuery<User, User[]> {
-    return super.getAll().where(x => x.deleted).isFalse();
+    return super.getAll().and(x => x.deleted).isFalse();
   }
 }

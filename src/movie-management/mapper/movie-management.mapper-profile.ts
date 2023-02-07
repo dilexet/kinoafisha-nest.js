@@ -27,11 +27,11 @@ export class MovieManagementMapperProfile extends AutomapperProfile {
           mapFrom(source => convertDate(source.premiereDate))),
         forMember(
           (dest) => dest.countries,
-          mapFrom(source => source?.countries),
+          mapFrom(source => mapper.mapArray(source?.countries, Country, CountryViewDto)),
         ),
         forMember(
           (dest) => dest.genres,
-          mapFrom(source => source?.genres),
+          mapFrom(source => mapper.mapArray(source?.genres, Genre, GenreViewDto)),
         ),
       );
     };
