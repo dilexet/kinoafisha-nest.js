@@ -13,6 +13,11 @@ import { BookedOrder } from '../database/entity/booked-order';
 import { TicketState } from '../shared/enums/ticket-state.enum';
 import { BookedOrderViewDto } from './dto/booked-order-view.dto';
 import { UserProfileRepository } from '../database/repository/user-profile.repository';
+import { MoviePopularityService } from '../shared/utils/movie-popularity-service';
+import {
+  MoviePopularityByBooking,
+  MoviePopularityByGetDetails,
+} from '../shared/constants/movie-popularity';
 
 @Injectable()
 export class BookingService {
@@ -22,6 +27,7 @@ export class BookingService {
     private readonly sessionSeatRepository: SessionSeatRepository,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly bookedOrderRepository: BookedOrderRepository,
+    private readonly moviePopularityService: MoviePopularityService,
   ) {
   }
 
@@ -34,7 +40,8 @@ export class BookingService {
 
     const session = await this.sessionRepository.getById(id)
       .include(x => x.sessionSeats)
-      .thenInclude(x => x.seat);
+      .thenInclude(x => x.seat)
+      .include(x => x.movie);
 
     if (!session) {
       throw new NotFoundException('Session is not exist');
@@ -63,6 +70,8 @@ export class BookingService {
     if (!bookedOrderCreated) {
       throw new InternalServerErrorException('Error while book tickets');
     }
+
+    await this.moviePopularityService.addPopularityMovie(session.movie.id, MoviePopularityByBooking);
 
     return this.mapper.map(bookedOrderCreated, BookedOrder, BookedOrderViewDto);
   }
@@ -111,6 +120,8 @@ export class BookingService {
         }
       }
     }
+
+    await this.moviePopularityService.addPopularityMovie(session.movie.id, MoviePopularityByGetDetails);
 
     sessionDetails.sessionSeatTypes = sessionSeatTypes;
 

@@ -30,6 +30,9 @@ export class Movie extends BaseEntity {
   @AutoMap()
   durationInMinutes: number;
 
+  @Column({ default: 0 })
+  popularity: number;
+
   @OneToMany(() => Session,
     session => session.movie)
   @AutoMap()
