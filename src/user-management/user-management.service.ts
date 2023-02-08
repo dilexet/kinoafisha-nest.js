@@ -32,7 +32,6 @@ export class UserManagementService {
       .where(x => x.email)
       .equal(userDto.email);
 
-    console.log(userEmailExist);
     if (userEmailExist) {
       throw new BadRequestException('User with this email already exist');
     }
