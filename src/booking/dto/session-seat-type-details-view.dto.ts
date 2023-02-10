@@ -8,5 +8,5 @@ export class SessionSeatTypeDetailsViewDto {
   price: number;
 
   @AutoMap()
-  seatType: string;
+  name: string;
 }

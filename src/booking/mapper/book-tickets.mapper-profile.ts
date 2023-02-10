@@ -34,15 +34,17 @@ export class BookTicketsMapperProfile extends AutomapperProfile {
       createMap(mapper, Movie, MovieDetailsViewDto,
         forMember(dest => dest.premiereDate,
           mapFrom(source => convertDate(source.premiereDate))),
-          forMember(dest => dest.genres,
-            mapFrom(source => source.genres.map(x => x.name))),
-          forMember(dest => dest.countries,
-            mapFrom(source => source.countries.map(x => x.name))),
-        );
+        forMember(dest => dest.genres,
+          mapFrom(source => source.genres.map(x => x.name))),
+        forMember(dest => dest.countries,
+          mapFrom(source => source.countries.map(x => x.name))),
+      );
 
       createMap(mapper, Seat, SeatDetailsViewDto,
         forMember(dest => dest.seatType,
           mapFrom(source => source.seatType.name)),
+        forMember(dest => dest.seatTypeId,
+          mapFrom(source => source.seatType.id)),
       );
 
       createMap(mapper, Row, RowDetailsViewDto,

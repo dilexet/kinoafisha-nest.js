@@ -14,5 +14,8 @@ export class SeatDetailsViewDto {
   seatType: string;
 
   @AutoMap()
+  seatTypeId: string;
+
+  @AutoMap()
   ticketState: string;
 }

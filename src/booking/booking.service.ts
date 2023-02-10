@@ -81,7 +81,9 @@ export class BookingService {
       .getById(id)
       .include(x => x.hall)
       .thenInclude(x => x.rows)
+      .thenBy(x => x.numberRow)
       .thenInclude(x => x.seats)
+      .thenBy(x => x.numberSeat)
       .thenInclude(x => x.seatType)
       .include(x => x.hall)
       .thenInclude(x => x.cinema)
@@ -112,9 +114,10 @@ export class BookingService {
         seat.price = seat.price * sessionDetails.coefficient;
         seat.ticketState = sessionSeat.ticketState;
 
-        if (!sessionSeatTypes.find(x => x.seatType == seat.seatType)) {
+        if (!sessionSeatTypes.find(seatType => seatType.name == seat.seatType)) {
           const sessionSeatType: SessionSeatTypeDetailsViewDto = new SessionSeatTypeDetailsViewDto();
-          sessionSeatType.seatType = seat.seatType;
+          sessionSeatType.id = seat.seatTypeId;
+          sessionSeatType.name = seat.seatType;
           sessionSeatType.price = seat.price;
           sessionSeatTypes.push(sessionSeatType);
         }
