@@ -26,6 +26,7 @@ export class SessionSeat extends BaseEntity {
   session: Session;
 
   @ManyToOne(() => BookedOrder,
-    bookedOrder => bookedOrder.sessionSeats)
+    bookedOrder => bookedOrder.sessionSeats,
+    { onDelete: 'SET NULL' })
   bookedOrder: BookedOrder;
 }

@@ -109,9 +109,6 @@ export class TokenService {
       .getAll()
       .where(x => x.expireDate)
       .lessThanOrEqual(new Date());
-    for (const expireToken of expireTokens) {
-      await this.tokenRepository.delete(expireToken.id);
-      console.log(expireToken.id);
-    }
+    await this.tokenRepository.delete(expireTokens);
   }
 }
