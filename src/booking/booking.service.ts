@@ -14,10 +14,9 @@ import { TicketState } from '../shared/enums/ticket-state.enum';
 import { BookedOrderViewDto } from './dto/booked-order-view.dto';
 import { UserProfileRepository } from '../database/repository/user-profile.repository';
 import { MoviePopularityService } from '../shared/utils/movie-popularity-service';
-import {
-  MoviePopularityByBooking,
-  MoviePopularityByGetDetails,
-} from '../shared/constants/movie-popularity';
+import { MoviePopularityByBooking, MoviePopularityByGetDetails } from '../shared/constants/movie-popularity';
+import * as moment from 'moment';
+import { PayloadArray } from './types/payload';
 
 @Injectable()
 export class BookingService {
@@ -113,6 +112,7 @@ export class BookingService {
 
         seat.price = seat.price * sessionDetails.coefficient;
         seat.ticketState = sessionSeat.ticketState;
+        seat.sessionSeatId = sessionSeat.id;
 
         if (!sessionSeatTypes.find(seatType => seatType.name == seat.seatType)) {
           const sessionSeatType: SessionSeatTypeDetailsViewDto = new SessionSeatTypeDetailsViewDto();
@@ -129,5 +129,101 @@ export class BookingService {
     sessionDetails.sessionSeatTypes = sessionSeatTypes;
 
     return sessionDetails;
+  }
+
+  async blockSessionSeat(sessionSeatId: string): Promise<string> {
+    const sessionSeat = await this.sessionSeatRepository
+      .getById(sessionSeatId);
+
+    if (!sessionSeat || sessionSeat?.ticketState !== TicketState.Free) {
+      return null;
+    }
+
+    sessionSeat.ticketState = TicketState.Blocked;
+    sessionSeat.blockedTime = new Date();
+    const result = await this.sessionSeatRepository
+      .update(sessionSeat);
+
+    return result?.id;
+  }
+
+  async unlockSessionSeat(sessionSeatId: string): Promise<string> {
+    const sessionSeat = await this.sessionSeatRepository
+      .getById(sessionSeatId);
+
+    if (!sessionSeat) {
+      return null;
+    }
+
+    sessionSeat.ticketState = TicketState.Free;
+    sessionSeat.blockedTime = null;
+    const result = await this.sessionSeatRepository
+      .update(sessionSeat);
+
+    return result?.id;
+  }
+
+  async unlockSessionSeats(sessionSeatIds: string[]): Promise<string[]> {
+    if (!sessionSeatIds || sessionSeatIds?.length <= 0) {
+      return null;
+    }
+
+    let sessionSeats = await this.sessionSeatRepository
+      .getAll()
+      .where(x => x.id)
+      .in(sessionSeatIds);
+
+    if (!sessionSeats) {
+      return null;
+    }
+
+    sessionSeats = sessionSeats.map(sessionSeat => ({
+      ...sessionSeat,
+      ticketState: TicketState.Free,
+      blockedTime: null,
+    }));
+
+    const result = await this.sessionSeatRepository
+      .update(sessionSeats);
+
+    return result?.map(x => x.id);
+  }
+
+  async clearExpiresSessionSeats(): Promise<PayloadArray[]> {
+    const expireTime = moment(new Date())
+      .subtract(15, 'minutes')
+      .toDate();
+    const sessionSeatsExpires = await this.sessionSeatRepository
+      .getAll()
+      .include(x => x.session)
+      .where(x => x.blockedTime)
+      .lessThanOrEqual(expireTime);
+
+    if (sessionSeatsExpires?.length <= 0) {
+      return null;
+    }
+
+    const payload: PayloadArray[] = [];
+
+    for (const sessionSeat of sessionSeatsExpires) {
+      sessionSeat.ticketState = TicketState.Free;
+      sessionSeat.blockedTime = null;
+      const sessionExist = payload?.find(x => x?.sessionId === sessionSeat?.session?.id);
+      if (!sessionExist) {
+        payload.push({
+          sessionId: sessionSeat?.session?.id,
+          sessionSeatIds: sessionSeatsExpires.filter(x => x.session?.id === sessionSeat?.session?.id).map(x => x.id),
+          userSessionId: null,
+        });
+      }
+    }
+
+    try {
+      await this.sessionSeatRepository.update(sessionSeatsExpires);
+      return payload;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   }
 }

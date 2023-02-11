@@ -13,11 +13,13 @@ import { UserProfile } from '../database/entity/user-profile';
 import { UserProfileRepository } from '../database/repository/user-profile.repository';
 import { MovieRepository } from '../database/repository/movie.repository';
 import { MoviePopularityService } from '../shared/utils/movie-popularity-service';
+import { BookingGateway } from './booking.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Session, BookedOrder, UserProfile, SessionSeat])],
   controllers: [BookingController],
   providers: [
+    BookingGateway,
     BookTicketsMapperProfile, BookingService, MovieRepository, MoviePopularityService,
     SessionRepository, BookedOrderRepository, UserProfileRepository, SessionSeatRepository,
   ],
