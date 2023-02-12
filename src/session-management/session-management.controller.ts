@@ -1,10 +1,30 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  Res,
+  HttpStatus,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { SessionManagementService } from './session-management.service';
 import { SessionCreateDto } from './dto/session-create.dto';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { SessionUpdateDto } from './dto/session-update.dto';
+import { hasRole } from '../authorize/decorators/roles.decorator';
+import RoleEnum from '../shared/enums/role.enum';
+import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
+import { RoleGuard } from '../authorize/guards/role.guard';
 
+@ApiBearerAuth()
+@hasRole(RoleEnum.Admin)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @ApiTags('Session management')
 @Controller('session-management')
 export class SessionManagementController {

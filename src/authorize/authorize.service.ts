@@ -34,6 +34,8 @@ export class AuthorizeService {
 
   async loginAsync(userDto: LoginDto) {
     const user = await this.userRepository.getOne()
+      .include(x => x.userProfile)
+      .include(x => x.role)
       .where(x => x.email).equal(userDto.email);
     if (!user) {
       throw new BadRequestException('User is not exist');
@@ -115,7 +117,10 @@ export class AuthorizeService {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userRepository.getById(userId);
+    const user = await this.userRepository
+      .getById(userId)
+      .include(x => x.userProfile)
+      .include(x => x.role);
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -158,7 +163,10 @@ export class AuthorizeService {
     const { name, email } = tokenPayload;
 
     const candidate = await this.userRepository
-      .getOne().where(x => x.email).equal(email);
+      .getOne()
+      .include(x => x.userProfile)
+      .include(x => x.role)
+      .where(x => x.email).equal(email);
 
     if (!candidate) {
       return await this.registerGoogleUser(name, email);
@@ -176,7 +184,8 @@ export class AuthorizeService {
   }
 
   private async registerGoogleUser(name: string, email: string) {
-    const role = await this.roleRepository.getOne().where(x => x.name).equal(RoleEnum.User);
+    const role = await this.roleRepository.getOne()
+      .where(x => x.name).equal(RoleEnum.User);
     if (!role) {
       throw new InternalServerErrorException('You did not create roles');
     }

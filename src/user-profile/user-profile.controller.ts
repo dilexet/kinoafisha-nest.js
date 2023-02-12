@@ -1,9 +1,12 @@
-import { Controller, Get, Body, Put, Param, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Put, Param, Res, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserProfileService } from './user-profile.service';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @ApiTags('User profile')
 @Controller('user-profile')
 export class UserProfileController {

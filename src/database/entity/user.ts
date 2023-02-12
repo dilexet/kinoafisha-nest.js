@@ -36,7 +36,7 @@ export class User extends BaseEntity {
 
   @OneToOne(() => UserProfile,
     userProfile => userProfile.user,
-    { cascade: true })
+    { cascade: true, eager: true })
   userProfile: UserProfile;
 
   @AutoMap()
@@ -46,6 +46,6 @@ export class User extends BaseEntity {
   role: Role;
 
   @OneToMany(() => Token,
-      token => token.user)
+    token => token.user)
   tokens: Token[];
 }

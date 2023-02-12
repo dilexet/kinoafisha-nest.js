@@ -55,7 +55,7 @@ export class BookingService {
       if (!sessionSeat) {
         throw new InternalServerErrorException('Session seat did not find');
       }
-      if (sessionSeat.ticketState !== TicketState.Free) {
+      if (sessionSeat.ticketState === TicketState.Booked) {
         throw new BadRequestException('Seat is already booked');
       }
       sessionSeat.ticketState = TicketState.Booked;
@@ -168,11 +168,20 @@ export class BookingService {
       return null;
     }
 
+    if (typeof sessionSeatIds === 'string') {
+      const id = await this.unlockSessionSeat(sessionSeatIds);
+      if (id) {
+        return [id];
+      }
+      return null;
+    }
+
     let sessionSeats = await this.sessionSeatRepository
       .getAll()
       .where(x => x.id)
       .in(sessionSeatIds);
 
+    console.log(sessionSeats);
     if (!sessionSeats) {
       return null;
     }

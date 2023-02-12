@@ -1,10 +1,30 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, HttpStatus, Patch, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  Res,
+  HttpStatus,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserManagementService } from './user-management.service';
 import { UserDto } from './dto/user.dto';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserCreateDto } from './dto/user-create.dto';
+import { RoleGuard } from '../authorize/guards/role.guard';
+import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
+import { hasRole } from '../authorize/decorators/roles.decorator';
+import RoleEnum from '../shared/enums/role.enum';
 
+@ApiBearerAuth()
+@hasRole(RoleEnum.Admin)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @ApiTags('User management')
 @Controller('user-management')
 export class UserManagementController {

@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, Res, Query, UseGuards } from '@nestjs/common';
 import { HallManagementService } from './hall-management.service';
 import { HallDto } from './dto/hall.dto';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { hasRole } from '../authorize/decorators/roles.decorator';
+import RoleEnum from '../shared/enums/role.enum';
+import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
+import { RoleGuard } from '../authorize/guards/role.guard';
 
+@ApiBearerAuth()
+@hasRole(RoleEnum.Admin)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @ApiTags('Hall management')
 @Controller('hall-management')
 export class HallManagementController {
