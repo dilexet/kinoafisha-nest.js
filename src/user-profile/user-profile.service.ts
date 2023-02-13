@@ -41,6 +41,24 @@ export class UserProfileService {
       userProfile.user.name = userProfileDto.name;
     }
 
+    if (userProfileDto?.newPassword && !userProfileDto?.oldPassword ||
+      !userProfileDto?.newPassword && userProfileDto?.oldPassword) {
+      throw new BadRequestException('You must enter both the new and old passwords');
+    }
+
+    if (userProfileDto?.newPassword && userProfileDto?.oldPassword) {
+      const isPasswordsEquals = await bcrypt.compare(userProfileDto.oldPassword, userProfile.user.passwordHash);
+      if (!isPasswordsEquals) {
+        throw new BadRequestException('Old password does not match current password');
+      }
+
+      if (userProfileDto?.newPassword === userProfileDto?.oldPassword) {
+        throw new BadRequestException('New password cannot match old password');
+      }
+
+      userProfile.user.passwordHash = await bcrypt.hash(userProfileDto.newPassword, 5);
+    }
+
     if (userProfileDto?.email && userProfileDto?.email !== userProfile.user.email) {
       userProfile.user.email = userProfileDto.email;
       userProfile.user.isActivated = false;
@@ -57,19 +75,6 @@ export class UserProfileService {
       }
     }
 
-    if (userProfileDto?.newPassword && userProfileDto?.oldPassword) {
-      const isPasswordsEquals = await bcrypt.compare(userProfileDto.oldPassword, userProfile.user.passwordHash);
-      if (!isPasswordsEquals) {
-        throw new BadRequestException('Old password does not match current password');
-      }
-
-      if (userProfileDto?.newPassword === userProfileDto?.oldPassword) {
-        throw new BadRequestException('New password cannot match old password');
-      }
-
-      userProfile.user.passwordHash = await bcrypt.hash(userProfileDto.newPassword, 5);
-    }
-
     const userUpdated = await this.userRepository.update(userProfile.user);
 
     return this.mapper.map(userUpdated, User, UserProfileUpdateViewDto);
@@ -82,6 +87,14 @@ export class UserProfileService {
       .include(x => x.bookedOrders)
       .thenInclude(x => x.sessionSeats)
       .thenInclude(x => x.session)
+      .orderBy(x => x.startDate)
+      .thenInclude(x => x.movie)
+      .include(x => x.bookedOrders)
+      .thenInclude(x => x.sessionSeats)
+      .thenInclude(x => x.session)
+      .thenInclude(x => x.hall)
+      .thenInclude(x => x.cinema)
+      .thenInclude(x => x.address)
       .include(x => x.bookedOrders)
       .thenInclude(x => x.sessionSeats)
       .thenInclude(x => x.seat)

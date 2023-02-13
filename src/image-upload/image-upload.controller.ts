@@ -8,15 +8,15 @@ import RoleEnum from '../shared/enums/role.enum';
 import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
 import { RoleGuard } from '../authorize/guards/role.guard';
 
-@ApiBearerAuth()
-@hasRole(RoleEnum.Admin)
-@UseGuards(JwtAuthGuard, RoleGuard)
 @ApiTags('Image upload')
 @Controller('image-upload')
 export class ImageUploadController {
   constructor(private readonly imageUploadService: ImageUploadService) {
   }
 
+  @ApiBearerAuth()
+  @hasRole(RoleEnum.Admin)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Post()
   @ApiFile()
   uploadFile(@Res() res: Response, @UploadedFile() file: Express.Multer.File) {

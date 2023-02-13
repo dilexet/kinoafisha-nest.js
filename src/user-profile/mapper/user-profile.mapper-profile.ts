@@ -10,6 +10,8 @@ import { BookedSeatViewDto } from '../dto/booked-seat-view.dto';
 import { SessionSeat } from '../../database/entity/session-seat';
 import { UserProfileUpdateViewDto } from '../dto/user-profile-update-view.dto';
 import { User } from '../../database/entity/user';
+import { convertDate } from '../../shared/utils/convert-date';
+import { convertAddress } from '../../shared/utils/convert-address';
 
 @Injectable()
 export class UserProfileMapperProfile extends AutomapperProfile {
@@ -36,7 +38,22 @@ export class UserProfileMapperProfile extends AutomapperProfile {
 
       createMap(mapper, BookedOrder, UserBookedOrderViewDto,
         forMember(dest => dest.seats,
-          mapFrom(source => mapper.mapArray(source.sessionSeats, SessionSeat, BookedSeatViewDto))),
+          mapFrom(source =>
+            mapper.mapArray(source.sessionSeats, SessionSeat, BookedSeatViewDto))),
+        forMember(dest => dest.startDate,
+          mapFrom(source => convertDate(source?.sessionSeats[0]?.session?.startDate))),
+        forMember(dest => dest.endDate,
+          mapFrom(source => convertDate(source?.sessionSeats[0]?.session?.endDate))),
+        forMember(dest => dest.movieName,
+          mapFrom(source => source?.sessionSeats[0]?.session?.movie?.name)),
+        forMember(dest => dest.moviePosterURL,
+          mapFrom(source => source?.sessionSeats[0]?.session?.movie?.posterURL)),
+        forMember(dest => dest.cinemaName,
+          mapFrom(source => source?.sessionSeats[0]?.session?.hall?.cinema?.name)),
+        forMember(dest => dest.hallName,
+          mapFrom(source => source?.sessionSeats[0]?.session?.hall?.name)),
+        forMember(dest => dest.address,
+          mapFrom(source => convertAddress(source?.sessionSeats[0]?.session?.hall?.cinema?.address))),
       );
 
       createMap(mapper, User, UserProfileUpdateViewDto,

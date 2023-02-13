@@ -14,6 +14,7 @@ import { SessionViewDto } from '../dto/session-view.dto';
 import { Session } from '../../database/entity/session';
 import { hallWorkLoadCalculation } from '../../shared/utils/hall-work-load-calculation';
 import { convertDate } from '../../shared/utils/convert-date';
+import { convertAddress } from '../../shared/utils/convert-address';
 
 @Injectable()
 export class MovieFilterMapperProfile extends AutomapperProfile {
@@ -28,8 +29,7 @@ export class MovieFilterMapperProfile extends AutomapperProfile {
 
       createMap(mapper, Cinema, CinemaViewDto,
         forMember(dest => dest.address,
-          mapFrom(source =>
-            `${source.address.houseNumber} ${source.address.street}, ${source.address.city}, ${source.address.country}`)),
+          mapFrom(source => convertAddress(source.address))),
       );
 
       createMap(mapper, Session, SessionViewDto,
