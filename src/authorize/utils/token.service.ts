@@ -28,6 +28,7 @@ export class TokenService {
         roleId: user.role.id,
         role: user.role.name,
         email: user.email,
+        name: user.name,
         isActivated: user.isActivated,
       };
       const accessToken = await this.jwtService.signAsync(payload, {

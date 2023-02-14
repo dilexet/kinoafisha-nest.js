@@ -50,6 +50,7 @@ export class CommentsService {
     const movie = await this.movieRepository
       .getById(movieId)
       .include(x => x.comments)
+      .orderByDescending(x => x.createdDate)
       .thenInclude(x => x.userProfile)
       .thenInclude(x => x.user);
 

@@ -14,5 +14,8 @@ export class CommentInfo {
   userEmail: string;
 
   @AutoMap()
+  createdDate: string;
+
+  @AutoMap()
   text: string;
 }

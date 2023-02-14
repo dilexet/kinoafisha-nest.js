@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
 import { createMap, forMember, mapFrom, Mapper, MappingProfile } from '@automapper/core';
 import { Comment } from '../../database/entity/comment';
-import { CommentInfo } from '../dto/comment-view.dto';
+import { CommentInfo } from '../dto/comment-info-view.dto';
+import { convertDate } from '../../shared/utils/convert-date';
 
 @Injectable()
 export class CommentsMapperProfile extends AutomapperProfile {
@@ -23,6 +24,8 @@ export class CommentsMapperProfile extends AutomapperProfile {
           mapFrom(dest => dest.userProfile?.user?.email)),
         forMember(source => source.text,
           mapFrom(dest => dest.text)),
+        forMember(source => source.createdDate,
+          mapFrom(dest => convertDate(dest.createdDate))),
       );
     };
   }
