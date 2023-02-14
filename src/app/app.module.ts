@@ -24,6 +24,7 @@ import { MoviesModule } from '../movies/movies.module';
 import { MovieFilterModule } from '../movie-filter/movie-filter.module';
 import { BookingModule } from '../booking/booking.module';
 import { UserProfileModule } from '../user-profile/user-profile.module';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { UserProfileModule } from '../user-profile/user-profile.module';
     AutomapperModule.forRoot(
       { strategyInitializer: classes() }),
     ScheduleModule.forRoot(),
-    MailModule,
+    MailModule, CommentsModule,
     ImageUploadModule, GenresModule, CountriesModule, RolesModule,
     SeatTypesModule, CinemasModule, HallsModule, MoviesModule,
     AuthorizeModule, UserManagementModule,

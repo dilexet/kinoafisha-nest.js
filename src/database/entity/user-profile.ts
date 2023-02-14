@@ -2,6 +2,7 @@ import { Entity, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { BookedOrder } from './booked-order';
 import { User } from './user';
 import { BaseEntity } from './base-entity';
+import { Comment } from './comment';
 
 @Entity()
 export class UserProfile extends BaseEntity {
@@ -13,4 +14,8 @@ export class UserProfile extends BaseEntity {
   @OneToMany(() => BookedOrder,
     bookedOrder => bookedOrder.user)
   bookedOrders: BookedOrder[];
+
+  @OneToMany(() => Comment,
+    comment => comment.userProfile)
+  comments: Comment[];
 }

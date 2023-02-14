@@ -7,6 +7,7 @@ import { Country } from './country';
 import { AutoMap } from '@automapper/classes';
 import { Session } from './session';
 import { BaseEntity } from './base-entity';
+import { Comment } from './comment';
 
 @Entity()
 export class Movie extends BaseEntity {
@@ -49,4 +50,8 @@ export class Movie extends BaseEntity {
   @JoinTable()
   @AutoMap()
   countries: Country[];
+
+  @OneToMany(() => Comment,
+    comment => comment.movie)
+  comments: Comment[];
 }
