@@ -51,8 +51,6 @@ export class CommentsService {
       return null;
     }
 
-    console.log(movie.comments);
-
     return this.mapper.mapArray(movie.comments, Comment, CommentViewDto);
   }
 }

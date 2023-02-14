@@ -33,7 +33,7 @@ export class CommentsGateway implements OnGatewayInit, OnGatewayConnection, OnGa
   @SubscribeMessage('comment:getAll')
   async handleCommentsGet(client: Socket, movieId: string): Promise<void> {
     const result = await this.commentsService.getComments(movieId);
-    this.server.emit('comment-receive:get', result);
+    this.server.emit('comment-receive:getAll', result);
   }
 
   afterInit(server: Server) {

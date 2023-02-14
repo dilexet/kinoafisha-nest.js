@@ -22,7 +22,6 @@ export class BookingController {
   })
   @Put(':sessionId')
   async bockTickets(@Res() res: Response, @Param('sessionId') sessionId: string, @Body() bookTicketsDto: BookTicketsDto) {
-    console.log(bookTicketsDto);
     const result = await this.bookingService.bookTicketsAsync(sessionId, bookTicketsDto);
     return res.status(HttpStatus.OK).json(result);
   }

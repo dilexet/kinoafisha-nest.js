@@ -181,7 +181,6 @@ export class BookingService {
       .where(x => x.id)
       .in(sessionSeatIds);
 
-    console.log(sessionSeats);
     if (!sessionSeats) {
       return null;
     }
