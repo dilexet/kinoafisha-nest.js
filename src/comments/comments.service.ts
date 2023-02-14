@@ -7,6 +7,8 @@ import { UserProfileRepository } from '../database/repository/user-profile.repos
 import { CommentDto } from './dto/comment.dto';
 import { CommentViewDto } from './dto/comment-view.dto';
 import { Comment } from '../database/entity/comment';
+import { CommentInfo } from './dto/comment-info-view.dto';
+import { CommentArrayViewDto } from './dto/comment-array-view.dto';
 
 @Injectable()
 export class CommentsService {
@@ -37,10 +39,14 @@ export class CommentsService {
     newComment.movie = movie;
     const createdComment = await this.commentsRepository.create(newComment);
 
-    return this.mapper.map(createdComment, Comment, CommentViewDto);
+    const commentViewDto = new CommentViewDto();
+    commentViewDto.movieId = movie.id;
+    commentViewDto.comment = this.mapper.map(createdComment, Comment, CommentInfo);
+
+    return commentViewDto;
   }
 
-  async getComments(movieId: string): Promise<CommentViewDto[]> {
+  async getComments(movieId: string): Promise<CommentArrayViewDto> {
     const movie = await this.movieRepository
       .getById(movieId)
       .include(x => x.comments)
@@ -51,6 +57,10 @@ export class CommentsService {
       return null;
     }
 
-    return this.mapper.mapArray(movie.comments, Comment, CommentViewDto);
+    const commentArrayViewDto = new CommentArrayViewDto();
+    commentArrayViewDto.movieId = movie.id;
+    commentArrayViewDto.comments = this.mapper.mapArray(movie.comments, Comment, CommentInfo);
+
+    return commentArrayViewDto;
   }
 }
