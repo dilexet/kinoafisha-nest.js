@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -52,11 +51,11 @@ export class AuthorizeService {
     }
 
     if (user.isBlocked) {
-      throw new ForbiddenException('Your account has been blocked');
+      throw new BadRequestException('Your account has been blocked');
     }
 
     if (!user.isActivated) {
-      throw new ForbiddenException('You need to verify your email');
+      throw new BadRequestException('You need to verify your email');
     }
 
     try {
@@ -138,11 +137,11 @@ export class AuthorizeService {
     }
 
     if (user.isBlocked) {
-      throw new ForbiddenException('Your account has been blocked');
+      throw new UnauthorizedException('Your account has been blocked');
     }
 
     if (!user.isActivated) {
-      throw new ForbiddenException('You need to verify your email');
+      throw new UnauthorizedException('You need to verify your email');
     }
 
     const tokens = await this.tokenService.generateTokensAsync(user);
@@ -194,7 +193,7 @@ export class AuthorizeService {
     }
 
     if (candidate.isBlocked) {
-      throw new ForbiddenException('Your account has been blocked');
+      throw new BadRequestException('Your account has been blocked');
     }
 
     return await this.tokenService.generateTokensAsync(candidate);

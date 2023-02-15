@@ -82,6 +82,7 @@ export class BookingService {
         throw new BadRequestException('Seat is already booked');
       }
       sessionSeat.ticketState = TicketState.Booked;
+      sessionSeat.blockedTime = null;
       bookingOrder.totalPrice =
         bookingOrder.totalPrice + +sessionSeat.seat.price;
       bookingOrder.sessionSeats.push(sessionSeat);
