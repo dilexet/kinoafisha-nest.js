@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Param, Res, HttpStatus, Query, ParseUUIDPipe } from '@nestjs/common';
 import { MovieFilterService } from './movie-filter.service';
 import { MovieFilterQueryDto } from './dto/movie-filter-query.dto';
 import { Response } from 'express';
@@ -9,7 +9,8 @@ import { MovieFilterAfishaQueryDto } from './dto/movie-filter-afisha-query.dto';
 @ApiTags('Movie filter')
 @Controller('movie-filter')
 export class MovieFilterController {
-  constructor(private readonly movieFilterService: MovieFilterService) {}
+  constructor(private readonly movieFilterService: MovieFilterService) {
+  }
 
   @ApiImplicitQuery({ type: Boolean, name: 'onlyPopular', required: false })
   @ApiImplicitQuery({ type: Boolean, name: 'onlyFuture', required: false })
@@ -39,7 +40,7 @@ export class MovieFilterController {
   }
 
   @Get(':id')
-  async findOne(@Res() res: Response, @Param('id') id: string) {
+  async findOne(@Res() res: Response, @Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     const result = await this.movieFilterService.findMovieWithSessionsAsync(id);
     return res.status(HttpStatus.OK).json(result);
   }

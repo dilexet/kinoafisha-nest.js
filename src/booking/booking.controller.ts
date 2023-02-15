@@ -6,7 +6,7 @@ import {
   Put,
   Res,
   HttpStatus,
-  UseGuards,
+  UseGuards, ParseUUIDPipe,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookTicketsDto } from './dto/book-tickets.dto';
@@ -20,7 +20,8 @@ import { RoleGuard } from '../authorize/guards/role.guard';
 @ApiTags('Booking')
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly bookingService: BookingService) {
+  }
 
   @ApiBearerAuth()
   @hasRole(RoleEnum.User)
@@ -42,7 +43,7 @@ export class BookingController {
   }
 
   @Get(':sessionId')
-  async findOne(@Res() res: Response, @Param('sessionId') sessionId: string) {
+  async findOne(@Res() res: Response, @Param('sessionId', new ParseUUIDPipe({ version: '4' })) sessionId: string) {
     const result = await this.bookingService.getSessionDetailsAsync(sessionId);
     return res.status(HttpStatus.OK).json(result);
   }
