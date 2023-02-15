@@ -21,6 +21,4 @@ import { GenreRepository } from '../database/repository/genre.repository';
     MovieManagementService,
   ],
 })
-
-export class MovieManagementModule {
-}
+export class MovieManagementModule {}

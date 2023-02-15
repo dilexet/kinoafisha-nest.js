@@ -16,13 +16,20 @@ import { MoviePopularityService } from '../shared/utils/movie-popularity-service
 import { BookingGateway } from './booking.gateway';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Session, BookedOrder, UserProfile, SessionSeat])],
+  imports: [
+    TypeOrmModule.forFeature([Session, BookedOrder, UserProfile, SessionSeat]),
+  ],
   controllers: [BookingController],
   providers: [
     BookingGateway,
-    BookTicketsMapperProfile, BookingService, MovieRepository, MoviePopularityService,
-    SessionRepository, BookedOrderRepository, UserProfileRepository, SessionSeatRepository,
+    BookTicketsMapperProfile,
+    BookingService,
+    MovieRepository,
+    MoviePopularityService,
+    SessionRepository,
+    BookedOrderRepository,
+    UserProfileRepository,
+    SessionSeatRepository,
   ],
 })
-export class BookingModule {
-}
+export class BookingModule {}

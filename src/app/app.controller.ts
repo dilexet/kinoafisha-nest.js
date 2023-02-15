@@ -9,8 +9,7 @@ import RoleEnum from '../shared/enums/role.enum';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {
-  }
+  constructor(private readonly appService: AppService) {}
 
   @ApiBearerAuth()
   @hasRole(RoleEnum.Admin)

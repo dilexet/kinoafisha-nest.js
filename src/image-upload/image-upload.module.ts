@@ -10,5 +10,4 @@ import { ImageUploadService } from './image-upload.service';
   controllers: [ImageUploadController],
   providers: [MovieRepository, ImageUploadService],
 })
-export class ImageUploadModule {
-}
+export class ImageUploadModule {}

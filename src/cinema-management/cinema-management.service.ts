@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CinemaDto } from './dto/cinema.dto';
 import { CinemaViewDto } from './dto/cinema-view.dto';
 import { InjectMapper } from '@automapper/nestjs';
@@ -11,12 +16,13 @@ export class CinemaManagementService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private readonly cinemaRepository: CinemaRepository,
-  ) {
-  }
+  ) {}
 
   async createAsync(cinemaDto: CinemaDto): Promise<CinemaViewDto> {
     const cinemaExist = await this.cinemaRepository
-      .getOne().where(x => x.name).equal(cinemaDto.name);
+      .getOne()
+      .where((x) => x.name)
+      .equal(cinemaDto.name);
     if (cinemaExist) {
       throw new BadRequestException('Cinema with this name is exist');
     }
@@ -32,14 +38,16 @@ export class CinemaManagementService {
 
   async updateAsync(id: string, cinemaDto: CinemaDto): Promise<CinemaViewDto> {
     const cinemaNameExist = await this.cinemaRepository
-      .getOne().where(x => x.name).equal(cinemaDto.name);
+      .getOne()
+      .where((x) => x.name)
+      .equal(cinemaDto.name);
     if (cinemaNameExist && cinemaNameExist.id != id) {
       throw new BadRequestException('Cinema with this name is exist');
     }
 
     const cinemaExist = await this.cinemaRepository
       .getById(id)
-      .include(x => x.address);
+      .include((x) => x.address);
     if (!cinemaExist) {
       throw new BadRequestException('Cinema is not exist');
     }
@@ -58,11 +66,14 @@ export class CinemaManagementService {
     try {
       const cinemaExist = await this.cinemaRepository
         .getById(id)
-        .include(x => x.address)
-        .include(x => x.halls);
+        .include((x) => x.address)
+        .include((x) => x.halls);
       cinemaExist.deleted = true;
       cinemaExist.address.deleted = true;
-      cinemaExist.halls = cinemaExist.halls.map(hall => ({ ...hall, deleted: true }));
+      cinemaExist.halls = cinemaExist.halls.map((hall) => ({
+        ...hall,
+        deleted: true,
+      }));
       await this.cinemaRepository.update(cinemaExist);
       return id;
     } catch (err) {
@@ -74,11 +85,11 @@ export class CinemaManagementService {
   async findAllAsync(name: string): Promise<CinemaViewDto[]> {
     const cinemasQuery = this.cinemaRepository
       .getAll()
-      .include(x => x.address);
+      .include((x) => x.address);
     const cinemas = name
       ? await cinemasQuery
-        .where(x => x.name)
-        .contains(name, { matchCase: false })
+          .where((x) => x.name)
+          .contains(name, { matchCase: false })
       : await cinemasQuery;
     return this.mapper.mapArray(cinemas, Cinema, CinemaViewDto);
   }
@@ -86,7 +97,7 @@ export class CinemaManagementService {
   async findOneAsync(id: string): Promise<CinemaViewDto> {
     const cinema = await this.cinemaRepository
       .getById(id)
-      .include(x => x.address);
+      .include((x) => x.address);
     if (!cinema) {
       throw new NotFoundException('Cinema is not exist');
     }

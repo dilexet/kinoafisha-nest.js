@@ -10,8 +10,7 @@ export class RolesService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private readonly roleRepository: RoleRepository,
-  ) {
-  }
+  ) {}
 
   async findAllAsync(): Promise<RoleViewDto[]> {
     const roles = await this.roleRepository.getAll();

@@ -10,8 +10,7 @@ export class CinemasService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private cinemaRepository: CinemaRepository,
-  ) {
-  }
+  ) {}
 
   async findAllAsync(): Promise<CinemaViewDto[]> {
     const cinemas = await this.cinemaRepository.getAll();

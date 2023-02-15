@@ -28,8 +28,9 @@ import { RoleGuard } from '../authorize/guards/role.guard';
 @ApiTags('Session management')
 @Controller('session-management')
 export class SessionManagementController {
-  constructor(private readonly sessionManagementService: SessionManagementService) {
-  }
+  constructor(
+    private readonly sessionManagementService: SessionManagementService,
+  ) {}
 
   @Post()
   @ApiBody({
@@ -44,7 +45,11 @@ export class SessionManagementController {
   @ApiBody({
     type: SessionUpdateDto,
   })
-  async update(@Res() res: Response, @Param('id') id: string, @Body() sessionDto: SessionUpdateDto) {
+  async update(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() sessionDto: SessionUpdateDto,
+  ) {
     const result = await this.sessionManagementService.update(id, sessionDto);
     return res.status(HttpStatus.OK).json(result);
   }

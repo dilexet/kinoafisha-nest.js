@@ -14,17 +14,16 @@ import { SessionSeatRepository } from '../database/repository/session-seat.repos
 import { BookedOrderRepository } from '../database/repository/booked-order.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Hall, Movie,
-      Session, SessionSeat,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Hall, Movie, Session, SessionSeat])],
   controllers: [SessionManagementController],
-  providers: [SessionManagementMapperProfile, SessionManagementService,
-    HallRepository, MovieRepository, SessionRepository, SessionSeatRepository,
+  providers: [
+    SessionManagementMapperProfile,
+    SessionManagementService,
+    HallRepository,
+    MovieRepository,
+    SessionRepository,
+    SessionSeatRepository,
     BookedOrderRepository,
   ],
 })
-export class SessionManagementModule {
-}
+export class SessionManagementModule {}

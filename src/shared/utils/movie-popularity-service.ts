@@ -4,14 +4,10 @@ import { MoviePopularityMaxValue } from '../constants/movie-popularity';
 
 @Injectable()
 export class MoviePopularityService {
-  constructor(
-    private movieRepository: MovieRepository,
-  ) {
-  }
+  constructor(private movieRepository: MovieRepository) {}
 
   async addPopularityMovie(movieId: string, popularityValue: number) {
-    const movie = await this.movieRepository
-      .getById(movieId);
+    const movie = await this.movieRepository.getById(movieId);
 
     if (!movie) {
       return;

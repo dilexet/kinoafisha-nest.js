@@ -10,7 +10,6 @@ export class Token extends BaseEntity {
   @Column({ type: 'timestamptz' })
   expireDate: Date;
 
-  @ManyToOne(() => User,
-    user => user.tokens)
+  @ManyToOne(() => User, (user) => user.tokens)
   user: User;
 }

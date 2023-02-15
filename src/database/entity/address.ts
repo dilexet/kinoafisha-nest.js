@@ -21,7 +21,6 @@ export class Address extends BaseEntity {
   @AutoMap()
   houseNumber: number;
 
-  @OneToOne(() => Cinema,
-    cinema => cinema.address)
+  @OneToOne(() => Cinema, (cinema) => cinema.address)
   cinema: Cinema;
 }

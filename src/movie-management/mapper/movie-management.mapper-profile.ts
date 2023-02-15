@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper, MappingProfile } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  MappingProfile,
+} from '@automapper/core';
 import { MovieDto } from '../dto/movie.dto';
 import { Movie } from '../../database/entity/movie';
 import { MovieViewDto } from '../dto/movie-view.dto';
@@ -22,16 +28,25 @@ export class MovieManagementMapperProfile extends AutomapperProfile {
 
       createMap(mapper, Genre, GenreViewDto);
       createMap(mapper, Country, CountryViewDto);
-      createMap(mapper, Movie, MovieViewDto,
-        forMember(dest => dest.premiereDate,
-          mapFrom(source => convertDate(source.premiereDate))),
+      createMap(
+        mapper,
+        Movie,
+        MovieViewDto,
+        forMember(
+          (dest) => dest.premiereDate,
+          mapFrom((source) => convertDate(source.premiereDate)),
+        ),
         forMember(
           (dest) => dest.countries,
-          mapFrom(source => mapper.mapArray(source?.countries, Country, CountryViewDto)),
+          mapFrom((source) =>
+            mapper.mapArray(source?.countries, Country, CountryViewDto),
+          ),
         ),
         forMember(
           (dest) => dest.genres,
-          mapFrom(source => mapper.mapArray(source?.genres, Genre, GenreViewDto)),
+          mapFrom((source) =>
+            mapper.mapArray(source?.genres, Genre, GenreViewDto),
+          ),
         ),
       );
     };

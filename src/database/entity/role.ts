@@ -9,6 +9,6 @@ export class Role extends BaseEntity {
   @AutoMap()
   name: string;
 
-  @OneToMany(() => User, user => user.role)
+  @OneToMany(() => User, (user) => user.role)
   users: User[];
 }

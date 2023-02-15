@@ -1,4 +1,10 @@
-import { Entity, JoinColumn, ManyToOne, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 import { BaseEntity } from './base-entity';
 import { UserProfile } from './user-profile';
 import { AutoMap } from '@automapper/classes';
@@ -14,13 +20,11 @@ export class Comment extends BaseEntity {
   @AutoMap()
   createdDate: Date;
 
-  @ManyToOne(() => UserProfile,
-    user => user.comments, { eager: true })
+  @ManyToOne(() => UserProfile, (user) => user.comments, { eager: true })
   @JoinColumn()
   userProfile: UserProfile;
 
-  @ManyToOne(() => Movie,
-    movie => movie.comments, { eager: true })
+  @ManyToOne(() => Movie, (movie) => movie.comments, { eager: true })
   @JoinColumn()
   movie: Movie;
 }

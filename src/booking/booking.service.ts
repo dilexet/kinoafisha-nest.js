@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { BookTicketsDto } from './dto/book-tickets.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
@@ -14,7 +19,10 @@ import { TicketState } from '../shared/enums/ticket-state.enum';
 import { BookedOrderViewDto } from './dto/booked-order-view.dto';
 import { UserProfileRepository } from '../database/repository/user-profile.repository';
 import { MoviePopularityService } from '../shared/utils/movie-popularity-service';
-import { MoviePopularityByBooking, MoviePopularityByGetDetails } from '../shared/constants/movie-popularity';
+import {
+  MoviePopularityByBooking,
+  MoviePopularityByGetDetails,
+} from '../shared/constants/movie-popularity';
 import * as moment from 'moment';
 import { PayloadArray } from './types/payload';
 
@@ -27,20 +35,25 @@ export class BookingService {
     private readonly userProfileRepository: UserProfileRepository,
     private readonly bookedOrderRepository: BookedOrderRepository,
     private readonly moviePopularityService: MoviePopularityService,
-  ) {
-  }
+  ) {}
 
-  async bookTicketsAsync(id: string, bookTicketsDto: BookTicketsDto): Promise<BookedOrderViewDto> {
-    const user = await this.userProfileRepository.getById(bookTicketsDto.userProfileId);
+  async bookTicketsAsync(
+    id: string,
+    bookTicketsDto: BookTicketsDto,
+  ): Promise<BookedOrderViewDto> {
+    const user = await this.userProfileRepository.getById(
+      bookTicketsDto.userProfileId,
+    );
 
     if (!user) {
       throw new NotFoundException('User is not exist');
     }
 
-    const session = await this.sessionRepository.getById(id)
-      .include(x => x.sessionSeats)
-      .thenInclude(x => x.seat)
-      .include(x => x.movie);
+    const session = await this.sessionRepository
+      .getById(id)
+      .include((x) => x.sessionSeats)
+      .thenInclude((x) => x.seat)
+      .include((x) => x.movie);
 
     if (!session) {
       throw new NotFoundException('Session is not exist');
@@ -51,7 +64,9 @@ export class BookingService {
     bookingOrder.sessionSeats = [];
 
     for (const sessionSeatId of bookTicketsDto.sessionSeatsId) {
-      const sessionSeat: SessionSeat = session.sessionSeats.find(x => x.id == sessionSeatId);
+      const sessionSeat: SessionSeat = session.sessionSeats.find(
+        (x) => x.id == sessionSeatId,
+      );
       if (!sessionSeat) {
         throw new InternalServerErrorException('Session seat did not find');
       }
@@ -59,18 +74,24 @@ export class BookingService {
         throw new BadRequestException('Seat is already booked');
       }
       sessionSeat.ticketState = TicketState.Booked;
-      bookingOrder.totalPrice = bookingOrder.totalPrice + (+sessionSeat.seat.price);
+      bookingOrder.totalPrice =
+        bookingOrder.totalPrice + +sessionSeat.seat.price;
       bookingOrder.sessionSeats.push(sessionSeat);
     }
 
     bookingOrder.totalPrice = bookingOrder.totalPrice * session.coefficient;
 
-    const bookedOrderCreated = await this.bookedOrderRepository.create(bookingOrder);
+    const bookedOrderCreated = await this.bookedOrderRepository.create(
+      bookingOrder,
+    );
     if (!bookedOrderCreated) {
       throw new InternalServerErrorException('Error while book tickets');
     }
 
-    await this.moviePopularityService.addPopularityMovie(session.movie.id, MoviePopularityByBooking);
+    await this.moviePopularityService.addPopularityMovie(
+      session.movie.id,
+      MoviePopularityByBooking,
+    );
 
     return this.mapper.map(bookedOrderCreated, BookedOrder, BookedOrderViewDto);
   }
@@ -78,33 +99,38 @@ export class BookingService {
   async getSessionDetailsAsync(id: string): Promise<SessionDetailsViewDto> {
     const session = await this.sessionRepository
       .getById(id)
-      .include(x => x.hall)
-      .thenInclude(x => x.rows)
-      .thenBy(x => x.numberRow)
-      .thenInclude(x => x.seats)
-      .thenBy(x => x.numberSeat)
-      .thenInclude(x => x.seatType)
-      .include(x => x.hall)
-      .thenInclude(x => x.cinema)
-      .thenInclude(x => x.address)
-      .include(x => x.movie)
-      .thenInclude(x => x.genres)
-      .include(x => x.movie)
-      .thenInclude(x => x.countries)
-      .include(x => x.sessionSeats)
-      .thenInclude(x => x.seat);
+      .include((x) => x.hall)
+      .thenInclude((x) => x.rows)
+      .thenBy((x) => x.numberRow)
+      .thenInclude((x) => x.seats)
+      .thenBy((x) => x.numberSeat)
+      .thenInclude((x) => x.seatType)
+      .include((x) => x.hall)
+      .thenInclude((x) => x.cinema)
+      .thenInclude((x) => x.address)
+      .include((x) => x.movie)
+      .thenInclude((x) => x.genres)
+      .include((x) => x.movie)
+      .thenInclude((x) => x.countries)
+      .include((x) => x.sessionSeats)
+      .thenInclude((x) => x.seat);
 
     if (!session) {
       throw new NotFoundException('Session is not exist');
     }
 
-
-    const sessionDetails = this.mapper.map(session, Session, SessionDetailsViewDto);
+    const sessionDetails = this.mapper.map(
+      session,
+      Session,
+      SessionDetailsViewDto,
+    );
     const sessionSeatTypes: SessionSeatTypeDetailsViewDto[] = [];
 
     for (const row of sessionDetails.hall.rows) {
       for (const seat of row.seats) {
-        const sessionSeat: SessionSeat = session.sessionSeats.find(x => x.seat.id == seat.id);
+        const sessionSeat: SessionSeat = session.sessionSeats.find(
+          (x) => x.seat.id == seat.id,
+        );
 
         if (!sessionSeat) {
           throw new InternalServerErrorException('Session seat did not find');
@@ -114,8 +140,11 @@ export class BookingService {
         seat.ticketState = sessionSeat.ticketState;
         seat.sessionSeatId = sessionSeat.id;
 
-        if (!sessionSeatTypes.find(seatType => seatType.name == seat.seatType)) {
-          const sessionSeatType: SessionSeatTypeDetailsViewDto = new SessionSeatTypeDetailsViewDto();
+        if (
+          !sessionSeatTypes.find((seatType) => seatType.name == seat.seatType)
+        ) {
+          const sessionSeatType: SessionSeatTypeDetailsViewDto =
+            new SessionSeatTypeDetailsViewDto();
           sessionSeatType.id = seat.seatTypeId;
           sessionSeatType.name = seat.seatType;
           sessionSeatType.price = seat.price;
@@ -124,7 +153,10 @@ export class BookingService {
       }
     }
 
-    await this.moviePopularityService.addPopularityMovie(session.movie.id, MoviePopularityByGetDetails);
+    await this.moviePopularityService.addPopularityMovie(
+      session.movie.id,
+      MoviePopularityByGetDetails,
+    );
 
     sessionDetails.sessionSeatTypes = sessionSeatTypes;
 
@@ -132,8 +164,7 @@ export class BookingService {
   }
 
   async blockSessionSeat(sessionSeatId: string): Promise<string> {
-    const sessionSeat = await this.sessionSeatRepository
-      .getById(sessionSeatId);
+    const sessionSeat = await this.sessionSeatRepository.getById(sessionSeatId);
 
     if (!sessionSeat || sessionSeat?.ticketState !== TicketState.Free) {
       return null;
@@ -141,15 +172,13 @@ export class BookingService {
 
     sessionSeat.ticketState = TicketState.Blocked;
     sessionSeat.blockedTime = new Date();
-    const result = await this.sessionSeatRepository
-      .update(sessionSeat);
+    const result = await this.sessionSeatRepository.update(sessionSeat);
 
     return result?.id;
   }
 
   async unlockSessionSeat(sessionSeatId: string): Promise<string> {
-    const sessionSeat = await this.sessionSeatRepository
-      .getById(sessionSeatId);
+    const sessionSeat = await this.sessionSeatRepository.getById(sessionSeatId);
 
     if (!sessionSeat) {
       return null;
@@ -157,8 +186,7 @@ export class BookingService {
 
     sessionSeat.ticketState = TicketState.Free;
     sessionSeat.blockedTime = null;
-    const result = await this.sessionSeatRepository
-      .update(sessionSeat);
+    const result = await this.sessionSeatRepository.update(sessionSeat);
 
     return result?.id;
   }
@@ -178,33 +206,30 @@ export class BookingService {
 
     let sessionSeats = await this.sessionSeatRepository
       .getAll()
-      .where(x => x.id)
+      .where((x) => x.id)
       .in(sessionSeatIds);
 
     if (!sessionSeats) {
       return null;
     }
 
-    sessionSeats = sessionSeats.map(sessionSeat => ({
+    sessionSeats = sessionSeats.map((sessionSeat) => ({
       ...sessionSeat,
       ticketState: TicketState.Free,
       blockedTime: null,
     }));
 
-    const result = await this.sessionSeatRepository
-      .update(sessionSeats);
+    const result = await this.sessionSeatRepository.update(sessionSeats);
 
-    return result?.map(x => x.id);
+    return result?.map((x) => x.id);
   }
 
   async clearExpiresSessionSeats(): Promise<PayloadArray[]> {
-    const expireTime = moment(new Date())
-      .subtract(15, 'minutes')
-      .toDate();
+    const expireTime = moment(new Date()).subtract(15, 'minutes').toDate();
     const sessionSeatsExpires = await this.sessionSeatRepository
       .getAll()
-      .include(x => x.session)
-      .where(x => x.blockedTime)
+      .include((x) => x.session)
+      .where((x) => x.blockedTime)
       .lessThanOrEqual(expireTime);
 
     if (sessionSeatsExpires?.length <= 0) {
@@ -216,11 +241,15 @@ export class BookingService {
     for (const sessionSeat of sessionSeatsExpires) {
       sessionSeat.ticketState = TicketState.Free;
       sessionSeat.blockedTime = null;
-      const sessionExist = payload?.find(x => x?.sessionId === sessionSeat?.session?.id);
+      const sessionExist = payload?.find(
+        (x) => x?.sessionId === sessionSeat?.session?.id,
+      );
       if (!sessionExist) {
         payload.push({
           sessionId: sessionSeat?.session?.id,
-          sessionSeatIds: sessionSeatsExpires.filter(x => x.session?.id === sessionSeat?.session?.id).map(x => x.id),
+          sessionSeatIds: sessionSeatsExpires
+            .filter((x) => x.session?.id === sessionSeat?.session?.id)
+            .map((x) => x.id),
           userSessionId: null,
         });
       }

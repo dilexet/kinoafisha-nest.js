@@ -10,8 +10,7 @@ export class HallsService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private cinemaRepository: CinemaRepository,
-  ) {
-  }
+  ) {}
 
   async findByCinemaAsync(cinemaId: string): Promise<HallViewDto[]> {
     if (!cinemaId) {
@@ -19,9 +18,9 @@ export class HallsService {
     }
     const cinema = await this.cinemaRepository
       .getById(cinemaId)
-      .include(x => x.halls)
-      .join(x => x.halls)
-      .where(x => x.deleted)
+      .include((x) => x.halls)
+      .join((x) => x.halls)
+      .where((x) => x.deleted)
       .isFalse();
     if (!cinema || !cinema?.halls || cinema?.halls?.length <= 0) {
       return [];

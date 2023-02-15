@@ -11,5 +11,4 @@ import { Role } from '../database/entity/role';
   controllers: [RolesController],
   providers: [RolesMapperProfile, RolesService, RoleRepository],
 })
-export class RolesModule {
-}
+export class RolesModule {}

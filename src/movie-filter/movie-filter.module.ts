@@ -11,9 +11,11 @@ import { MoviePopularityService } from '../shared/utils/movie-popularity-service
 @Module({
   imports: [TypeOrmModule.forFeature([Movie, Session])],
   controllers: [MovieFilterController],
-  providers: [MovieFilterMapperProfile, MovieFilterService,
-    MovieRepository, MoviePopularityService,
+  providers: [
+    MovieFilterMapperProfile,
+    MovieFilterService,
+    MovieRepository,
+    MoviePopularityService,
   ],
 })
-export class MovieFilterModule {
-}
+export class MovieFilterModule {}

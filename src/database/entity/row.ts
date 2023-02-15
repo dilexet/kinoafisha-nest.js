@@ -10,13 +10,10 @@ export class Row extends BaseEntity {
   @AutoMap()
   numberRow: number;
 
-  @ManyToOne(() => Hall,
-    hall => hall.rows, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Hall, (hall) => hall.rows, { onDelete: 'CASCADE' })
   hall: Hall;
 
-  @OneToMany(() => Seat,
-    seat => seat.row,
-    { cascade: true, eager: true })
+  @OneToMany(() => Seat, (seat) => seat.row, { cascade: true, eager: true })
   @AutoMap(() => Seat)
   seats: Seat[];
 }

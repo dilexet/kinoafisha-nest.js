@@ -11,5 +11,4 @@ import { MovieRepository } from '../database/repository/movie.repository';
   controllers: [CinemasController],
   providers: [MoviesMapperProfile, MoviesService, MovieRepository],
 })
-export class MoviesModule {
-}
+export class MoviesModule {}

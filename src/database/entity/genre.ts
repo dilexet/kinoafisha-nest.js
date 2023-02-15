@@ -9,6 +9,6 @@ export class Genre extends BaseEntity {
   @AutoMap()
   name: string;
 
-  @ManyToMany(() => Movie, movie => movie.genres)
+  @ManyToMany(() => Movie, (movie) => movie.genres)
   movies: Movie[];
 }

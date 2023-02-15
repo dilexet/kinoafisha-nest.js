@@ -11,5 +11,4 @@ import { GenreRepository } from '../database/repository/genre.repository';
   controllers: [GenresController],
   providers: [GenresMapperProfile, GenresService, GenreRepository],
 })
-export class GenresModule {
-}
+export class GenresModule {}

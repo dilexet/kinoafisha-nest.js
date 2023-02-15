@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
@@ -23,13 +28,12 @@ export class UserManagementService {
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
     private readonly tokenRepository: TokenRepository,
-  ) {
-  }
+  ) {}
 
   async create(userDto: UserCreateDto) {
     const userEmailExist = await this.userRepository
       .getOne()
-      .where(x => x.email)
+      .where((x) => x.email)
       .equal(userDto.email);
 
     if (userEmailExist) {
@@ -60,7 +64,8 @@ export class UserManagementService {
         userCreated.name,
         userCreated.email,
         userDto.password,
-        `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`);
+        `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`,
+      );
     } catch (err) {
       throw new InternalServerErrorException('Error while sending email');
     }
@@ -71,14 +76,14 @@ export class UserManagementService {
   async update(id: string, userDto: UserDto) {
     const userEmailExist = await this.userRepository
       .getOne()
-      .where(x => x.email)
+      .where((x) => x.email)
       .equal(userDto.email);
 
     if (userEmailExist && userEmailExist.id != id) {
       throw new BadRequestException('User with this email already exist');
     }
 
-    const user = await this.userRepository.getById(id).include(x => x.role);
+    const user = await this.userRepository.getById(id).include((x) => x.role);
 
     if (!user) {
       throw new NotFoundException('User is not exist');
@@ -109,9 +114,9 @@ export class UserManagementService {
   async remove(id: string): Promise<string> {
     const user = await this.userRepository
       .getById(id)
-      .include(x => x.role)
-      .include(x => x.userProfile)
-      .include(x => x.tokens);
+      .include((x) => x.role)
+      .include((x) => x.userProfile)
+      .include((x) => x.tokens);
     if (user.role.name === RoleEnum.Admin) {
       await this.checkLastAdmin(RoleEnum.Admin);
     }
@@ -130,9 +135,7 @@ export class UserManagementService {
   }
 
   async changeLockStatus(id: string): Promise<UserViewDto> {
-    const user = await this.userRepository
-      .getById(id)
-      .include(x => x.role);
+    const user = await this.userRepository.getById(id).include((x) => x.role);
 
     if (!user) {
       throw new NotFoundException('User is not exist');
@@ -147,29 +150,27 @@ export class UserManagementService {
     user.isBlocked = newStatus;
     const userBlocked = await this.userRepository.update(user);
     if (!userBlocked) {
-      throw new InternalServerErrorException('Error while change user lock status');
+      throw new InternalServerErrorException(
+        'Error while change user lock status',
+      );
     }
 
     return this.mapper.map(userBlocked, User, UserViewDto);
   }
 
   async findAll(name: string): Promise<UserViewDto[]> {
-    const usersQuery = this.userRepository
-      .getAll()
-      .include(x => x.role);
+    const usersQuery = this.userRepository.getAll().include((x) => x.role);
     const users = name
       ? await usersQuery
-        .where(x => x.name)
-        .contains(name, { matchCase: false })
+          .where((x) => x.name)
+          .contains(name, { matchCase: false })
       : await usersQuery;
 
     return this.mapper.mapArray(users, User, UserViewDto);
   }
 
   async findOne(id: string): Promise<UserViewDto> {
-    const user = await this.userRepository
-      .getById(id)
-      .include(x => x.role);
+    const user = await this.userRepository.getById(id).include((x) => x.role);
 
     if (!user) {
       throw new NotFoundException('User is not exist');
@@ -179,14 +180,15 @@ export class UserManagementService {
   }
 
   private async checkLastAdmin(roleName: string) {
-    const isLastAdmin = await this.userRepository
-      .getAll()
-      .include(x => x.role)
-      .where(x => x.isBlocked)
-      .isFalse()
-      .where(x => x.role.name)
-      .equal(roleName)
-      .count() <= 1;
+    const isLastAdmin =
+      (await this.userRepository
+        .getAll()
+        .include((x) => x.role)
+        .where((x) => x.isBlocked)
+        .isFalse()
+        .where((x) => x.role.name)
+        .equal(roleName)
+        .count()) <= 1;
     if (isLastAdmin) {
       throw new BadRequestException('You cannot remove the last admin');
     }

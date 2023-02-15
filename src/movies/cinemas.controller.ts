@@ -6,8 +6,7 @@ import { Response } from 'express';
 @ApiTags('Movies')
 @Controller('movies')
 export class CinemasController {
-  constructor(private readonly moviesService: MoviesService) {
-  }
+  constructor(private readonly moviesService: MoviesService) {}
 
   @Get()
   async findAll(@Res() res: Response) {

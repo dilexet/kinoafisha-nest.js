@@ -9,7 +9,6 @@ export class SeatType extends BaseEntity {
   @AutoMap()
   name: string;
 
-  @OneToOne(() => Seat,
-    seat => seat.seatType)
+  @OneToOne(() => Seat, (seat) => seat.seatType)
   seats: Seat[];
 }

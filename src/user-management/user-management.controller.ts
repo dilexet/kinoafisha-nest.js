@@ -28,8 +28,7 @@ import RoleEnum from '../shared/enums/role.enum';
 @ApiTags('User management')
 @Controller('user-management')
 export class UserManagementController {
-  constructor(private readonly userManagementService: UserManagementService) {
-  }
+  constructor(private readonly userManagementService: UserManagementService) {}
 
   @Post()
   @ApiBody({
@@ -44,7 +43,11 @@ export class UserManagementController {
   @ApiBody({
     type: UserDto,
   })
-  async update(@Res() res: Response, @Param('id') id: string, @Body() userDto: UserDto) {
+  async update(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() userDto: UserDto,
+  ) {
     const result = await this.userManagementService.update(id, userDto);
     return res.status(HttpStatus.OK).json(result);
   }
@@ -59,7 +62,6 @@ export class UserManagementController {
   async remove(@Res() res: Response, @Param('id') id: string) {
     const result = await this.userManagementService.remove(id);
     return res.status(HttpStatus.OK).json(result);
-
   }
 
   @ApiQuery({
@@ -71,7 +73,6 @@ export class UserManagementController {
   async findAll(@Res() res: Response, @Query('name') name?: string) {
     const result = await this.userManagementService.findAll(name);
     return res.status(HttpStatus.OK).json(result);
-
   }
 
   @Get(':id')

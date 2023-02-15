@@ -1,4 +1,13 @@
-import { Controller, Get, Body, Param, Put, Res, HttpStatus, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Param,
+  Put,
+  Res,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookTicketsDto } from './dto/book-tickets.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
@@ -11,8 +20,7 @@ import { RoleGuard } from '../authorize/guards/role.guard';
 @ApiTags('Booking')
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {
-  }
+  constructor(private readonly bookingService: BookingService) {}
 
   @ApiBearerAuth()
   @hasRole(RoleEnum.User)
@@ -21,8 +29,15 @@ export class BookingController {
     type: BookTicketsDto,
   })
   @Put(':sessionId')
-  async bockTickets(@Res() res: Response, @Param('sessionId') sessionId: string, @Body() bookTicketsDto: BookTicketsDto) {
-    const result = await this.bookingService.bookTicketsAsync(sessionId, bookTicketsDto);
+  async bockTickets(
+    @Res() res: Response,
+    @Param('sessionId') sessionId: string,
+    @Body() bookTicketsDto: BookTicketsDto,
+  ) {
+    const result = await this.bookingService.bookTicketsAsync(
+      sessionId,
+      bookTicketsDto,
+    );
     return res.status(HttpStatus.OK).json(result);
   }
 

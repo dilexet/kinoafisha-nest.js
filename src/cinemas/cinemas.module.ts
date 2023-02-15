@@ -11,5 +11,4 @@ import { Cinema } from '../database/entity/cinema';
   controllers: [CinemasController],
   providers: [CinemasMapperProfile, CinemasService, CinemaRepository],
 })
-export class CinemasModule {
-}
+export class CinemasModule {}

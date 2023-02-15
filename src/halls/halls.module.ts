@@ -11,5 +11,4 @@ import { CinemaRepository } from '../database/repository/cinema.repository';
   controllers: [HallsController],
   providers: [HallsMapperProfile, HallsService, CinemaRepository],
 })
-export class HallsModule {
-}
+export class HallsModule {}

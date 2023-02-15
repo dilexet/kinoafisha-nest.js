@@ -11,5 +11,4 @@ import { SeatTypeRepository } from '../database/repository/seat-type.repository'
   controllers: [SeatTypesController],
   providers: [SeatTypesMapperProfile, SeatTypesService, SeatTypeRepository],
 })
-export class SeatTypesModule {
-}
+export class SeatTypesModule {}

@@ -5,7 +5,10 @@ import * as path from 'path';
 
 export const imageFileFilter = (req: any, file: any, callback) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-    return callback(new BadRequestException('Only .jpg, .jpeg, .png files are allowed'), false);
+    return callback(
+      new BadRequestException('Only .jpg, .jpeg, .png files are allowed'),
+      false,
+    );
   }
   callback(null, true);
 };

@@ -6,16 +6,13 @@ import { Comment } from './comment';
 
 @Entity()
 export class UserProfile extends BaseEntity {
-  @OneToOne(() => User,
-    user => user.userProfile)
+  @OneToOne(() => User, (user) => user.userProfile)
   @JoinColumn()
   user: User;
 
-  @OneToMany(() => BookedOrder,
-    bookedOrder => bookedOrder.user)
+  @OneToMany(() => BookedOrder, (bookedOrder) => bookedOrder.user)
   bookedOrders: BookedOrder[];
 
-  @OneToMany(() => Comment,
-    comment => comment.userProfile)
+  @OneToMany(() => Comment, (comment) => comment.userProfile)
   comments: Comment[];
 }

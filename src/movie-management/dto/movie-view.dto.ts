@@ -2,7 +2,6 @@ import { AutoMap } from '@automapper/classes';
 import { GenreViewDto } from './genre-view.dto';
 import { CountryViewDto } from './country-view.dto';
 
-
 export class MovieViewDto {
   @AutoMap()
   id: string;

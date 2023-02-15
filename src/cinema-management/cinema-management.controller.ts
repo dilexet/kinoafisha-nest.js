@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpStatus,
+  Res,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CinemaManagementService } from './cinema-management.service';
 import { CinemaDto } from './dto/cinema.dto';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -14,8 +26,9 @@ import { RoleGuard } from '../authorize/guards/role.guard';
 @ApiTags('Cinema management')
 @Controller('cinema-management')
 export class CinemaManagementController {
-  constructor(private readonly cinemaManagementService: CinemaManagementService) {
-  }
+  constructor(
+    private readonly cinemaManagementService: CinemaManagementService,
+  ) {}
 
   @Post()
   @ApiBody({
@@ -30,8 +43,15 @@ export class CinemaManagementController {
   @ApiBody({
     type: CinemaDto,
   })
-  async update(@Res() res: Response, @Param('id') id: string, @Body() cinemaDto: CinemaDto) {
-    const result = await this.cinemaManagementService.updateAsync(id, cinemaDto);
+  async update(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() cinemaDto: CinemaDto,
+  ) {
+    const result = await this.cinemaManagementService.updateAsync(
+      id,
+      cinemaDto,
+    );
     return res.status(HttpStatus.OK).json(result);
   }
 

@@ -1,24 +1,32 @@
 import {
-  Body, Controller, Get,
-  HttpStatus, Param, Post, Redirect, Req, Res,
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Redirect,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiBody, ApiExcludeEndpoint, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiExcludeEndpoint,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthorizeService } from './authorize.service';
 import { LogoutDto } from './dto/logout.dto';
 import { TokenDto } from './dto/token.dto';
 import appConfigConstants from '../shared/constants/app-config.constants';
 
-
 @ApiTags('Authorize')
 @Controller('authorize')
 export class AuthorizeController {
-  constructor(
-    private authorizeService: AuthorizeService,
-  ) {
-  }
+  constructor(private authorizeService: AuthorizeService) {}
 
   @ApiBody({
     type: LoginDto,
@@ -72,7 +80,11 @@ export class AuthorizeController {
 
   @ApiExcludeEndpoint()
   @Post('google')
-  async googleAuthCallback(@Req() req, @Res() res: Response, @Body('token') token: string) {
+  async googleAuthCallback(
+    @Req() req,
+    @Res() res: Response,
+    @Body('token') token: string,
+  ) {
     const result = await this.authorizeService.googleSignIn(token);
     return res.status(HttpStatus.OK).json(result);
   }

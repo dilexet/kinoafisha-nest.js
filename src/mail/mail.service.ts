@@ -3,13 +3,17 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {
-  }
+  constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmationLinkAsync(name: string, email: string, link: string) {
+  async sendUserConfirmationLinkAsync(
+    name: string,
+    email: string,
+    link: string,
+  ) {
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Welcome to Cinema ticket reservation system! Please, confirm your Email',
+      subject:
+        'Welcome to Cinema ticket reservation system! Please, confirm your Email',
       template: './confirmation',
       context: {
         name: name,
@@ -18,10 +22,16 @@ export class MailService {
     });
   }
 
-  async sendUserConfirmationLinkAndLoginAsync(name: string, email: string, password: string, link: string) {
+  async sendUserConfirmationLinkAndLoginAsync(
+    name: string,
+    email: string,
+    password: string,
+    link: string,
+  ) {
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Welcome to Cinema ticket reservation system! Please, confirm your Email',
+      subject:
+        'Welcome to Cinema ticket reservation system! Please, confirm your Email',
       template: './confirmation-login',
       context: {
         name: name,

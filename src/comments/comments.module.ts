@@ -16,8 +16,9 @@ import { CommentsMapperProfile } from './mapper/comments.mapper-profile';
     CommentsMapperProfile,
     CommentsGateway,
     CommentsService,
-    MovieRepository, CommentRepository, UserProfileRepository,
+    MovieRepository,
+    CommentRepository,
+    UserProfileRepository,
   ],
 })
-export class CommentsModule {
-}
+export class CommentsModule {}

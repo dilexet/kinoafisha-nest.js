@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { AutomapperProfile, InjectMapper } from '@automapper/nestjs';
-import { createMap, forMember, mapFrom, Mapper, MappingProfile } from '@automapper/core';
+import {
+  createMap,
+  forMember,
+  mapFrom,
+  Mapper,
+  MappingProfile,
+} from '@automapper/core';
 import { Movie } from '../../database/entity/movie';
 import { MovieViewDto } from '../dto/movie-view.dto';
 import { GenreViewDto } from '../dto/genre-view.dto';
@@ -27,36 +33,76 @@ export class MovieFilterMapperProfile extends AutomapperProfile {
       createMap(mapper, Genre, GenreViewDto);
       createMap(mapper, Country, CountryViewDto);
 
-      createMap(mapper, Cinema, CinemaViewDto,
-        forMember(dest => dest.address,
-          mapFrom(source => convertAddress(source.address))),
+      createMap(
+        mapper,
+        Cinema,
+        CinemaViewDto,
+        forMember(
+          (dest) => dest.address,
+          mapFrom((source) => convertAddress(source.address)),
+        ),
       );
 
-      createMap(mapper, Session, SessionViewDto,
-        forMember(dest => dest.startDate,
-          mapFrom(source => convertDate(source.startDate))),
-        forMember(dest => dest.hallName,
-          mapFrom(source => source.hall.name)),
-        forMember(dest => dest.hallWorkLoad,
-          mapFrom(source => hallWorkLoadCalculation(source.sessionSeats))),
+      createMap(
+        mapper,
+        Session,
+        SessionViewDto,
+        forMember(
+          (dest) => dest.startDate,
+          mapFrom((source) => convertDate(source.startDate)),
+        ),
+        forMember(
+          (dest) => dest.hallName,
+          mapFrom((source) => source.hall.name),
+        ),
+        forMember(
+          (dest) => dest.hallWorkLoad,
+          mapFrom((source) => hallWorkLoadCalculation(source.sessionSeats)),
+        ),
       );
 
-      createMap(mapper, Movie, MovieViewDto,
-        forMember(dest => dest.premiereDate,
-          mapFrom(source => convertDate(source.premiereDate))),
-        forMember(dest => dest.countries,
-          mapFrom(source => mapper.mapArray(source.countries, Country, CountryViewDto))),
-        forMember(dest => dest.genres,
-          mapFrom(source => mapper.mapArray(source.genres, Genre, GenreViewDto))),
+      createMap(
+        mapper,
+        Movie,
+        MovieViewDto,
+        forMember(
+          (dest) => dest.premiereDate,
+          mapFrom((source) => convertDate(source.premiereDate)),
+        ),
+        forMember(
+          (dest) => dest.countries,
+          mapFrom((source) =>
+            mapper.mapArray(source.countries, Country, CountryViewDto),
+          ),
+        ),
+        forMember(
+          (dest) => dest.genres,
+          mapFrom((source) =>
+            mapper.mapArray(source.genres, Genre, GenreViewDto),
+          ),
+        ),
       );
 
-      createMap(mapper, Movie, MovieDetailsViewDto,
-        forMember(dest => dest.premiereDate,
-          mapFrom(source => convertDate(source.premiereDate))),
-        forMember(dest => dest.countries,
-          mapFrom(source => mapper.mapArray(source.countries, Country, CountryViewDto))),
-        forMember(dest => dest.genres,
-          mapFrom(source => mapper.mapArray(source.genres, Genre, GenreViewDto))),
+      createMap(
+        mapper,
+        Movie,
+        MovieDetailsViewDto,
+        forMember(
+          (dest) => dest.premiereDate,
+          mapFrom((source) => convertDate(source.premiereDate)),
+        ),
+        forMember(
+          (dest) => dest.countries,
+          mapFrom((source) =>
+            mapper.mapArray(source.countries, Country, CountryViewDto),
+          ),
+        ),
+        forMember(
+          (dest) => dest.genres,
+          mapFrom((source) =>
+            mapper.mapArray(source.genres, Genre, GenreViewDto),
+          ),
+        ),
       );
     };
   }

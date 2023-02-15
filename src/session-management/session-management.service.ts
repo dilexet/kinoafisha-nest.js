@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { SessionCreateDto } from './dto/session-create.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
@@ -29,50 +34,57 @@ export class SessionManagementService {
     private readonly sessionRepository: SessionRepository,
     private readonly sessionSeatRepository: SessionSeatRepository,
     private readonly bookedOrderRepository: BookedOrderRepository,
-    @InjectRepository(Session) private readonly sessionTempRepository: Repository<Session>,
-  ) {
-  }
+    @InjectRepository(Session)
+    private readonly sessionTempRepository: Repository<Session>,
+  ) {}
 
   async create(sessionDto: SessionCreateDto): Promise<SessionViewDto[]> {
     const hallExist = await this.hallRepository
       .getById(sessionDto?.hallId)
-      .include(x => x.cinema)
-      .include(x => x.rows)
-      .thenInclude(x => x.seats);
+      .include((x) => x.cinema)
+      .include((x) => x.rows)
+      .thenInclude((x) => x.seats);
 
     if (!hallExist) {
       throw new BadRequestException('Hall is not exist');
     }
 
-    const movieExist = await this.movieRepository
-      .getById(sessionDto?.movieId);
+    const movieExist = await this.movieRepository.getById(sessionDto?.movieId);
 
     if (!movieExist) {
       throw new BadRequestException('Movie is not exist');
     }
 
-    const sessionSeats: SessionSeat[] = await this.createSessionSeats(hallExist.rows);
+    const sessionSeats: SessionSeat[] = await this.createSessionSeats(
+      hallExist.rows,
+    );
 
     const sessions: Session[] = [];
 
     for (const sessionTime of sessionDto.sessionTimes) {
-      const sessionStart = moment(sessionTime.startDate)
-        .toDate();
+      const sessionStart = moment(sessionTime.startDate).toDate();
       const sessionEnd = moment(sessionTime.startDate)
         .add(movieExist.durationInMinutes + 10, 'minutes')
         .toDate();
 
-      const sessionExistInThisTime = await this.findSessionExistInThisTime(sessionStart, sessionEnd, hallExist?.id);
+      const sessionExistInThisTime = await this.findSessionExistInThisTime(
+        sessionStart,
+        sessionEnd,
+        hallExist?.id,
+      );
       if (sessionExistInThisTime) {
         throw new BadRequestException(
-          `Session exist in this time (${convertDate(sessionExistInThisTime.startDate)} - ${convertDate(sessionExistInThisTime.endDate)})`);
+          `Session exist in this time (${convertDate(
+            sessionExistInThisTime.startDate,
+          )} - ${convertDate(sessionExistInThisTime.endDate)})`,
+        );
       }
 
       const session: Session = new Session();
       session.coefficient = sessionTime.coefficient;
       session.startDate = sessionStart;
       session.endDate = sessionEnd;
-      session.sessionSeats = sessionSeats.map(x => ({ ...x, id: undefined }));
+      session.sessionSeats = sessionSeats.map((x) => ({ ...x, id: undefined }));
       session.hall = hallExist;
       session.movie = movieExist;
 
@@ -85,20 +97,19 @@ export class SessionManagementService {
       throw new InternalServerErrorException('Error while creating sessions');
     }
 
-    return this.mapper.mapArray(
-      sessionsCreated,
-      Session,
-      SessionViewDto,
-    );
+    return this.mapper.mapArray(sessionsCreated, Session, SessionViewDto);
   }
 
-  async update(id: string, sessionDto: SessionUpdateDto): Promise<SessionViewDto> {
+  async update(
+    id: string,
+    sessionDto: SessionUpdateDto,
+  ): Promise<SessionViewDto> {
     const sessionExist = await this.sessionRepository
       .getById(id)
-      .include(x => x.sessionSeats)
-      .include(x => x.hall)
-      .thenInclude(x => x.cinema)
-      .include(x => x.movie);
+      .include((x) => x.sessionSeats)
+      .include((x) => x.hall)
+      .thenInclude((x) => x.cinema)
+      .include((x) => x.movie);
 
     if (!sessionExist) {
       throw new BadRequestException('Session is not exist');
@@ -107,8 +118,9 @@ export class SessionManagementService {
     const session: Session = new Session();
 
     if (sessionExist.movie.id != sessionDto.movieId) {
-      const movieExist = await this.movieRepository
-        .getById(sessionDto?.movieId);
+      const movieExist = await this.movieRepository.getById(
+        sessionDto?.movieId,
+      );
 
       if (!movieExist) {
         throw new BadRequestException('Movie is not exist');
@@ -122,9 +134,9 @@ export class SessionManagementService {
     if (sessionExist.hall.id != sessionDto.hallId) {
       const hallExist = await this.hallRepository
         .getById(sessionDto?.hallId)
-        .include(x => x.cinema)
-        .include(x => x.rows)
-        .thenInclude(x => x.seats);
+        .include((x) => x.cinema)
+        .include((x) => x.rows)
+        .thenInclude((x) => x.seats);
 
       if (!hallExist) {
         throw new BadRequestException('Hall is not exist');
@@ -138,16 +150,22 @@ export class SessionManagementService {
       session.hall = sessionExist.hall;
     }
 
-    const sessionStart = moment(sessionDto.sessionTime.startDate)
-      .toDate();
+    const sessionStart = moment(sessionDto.sessionTime.startDate).toDate();
     const sessionEnd = moment(sessionDto.sessionTime.startDate)
       .add(sessionExist.movie.durationInMinutes + 10, 'minutes')
       .toDate();
 
-    const sessionExistInThisTime = await this.findSessionExistInThisTime(sessionStart, sessionEnd, sessionDto?.hallId);
+    const sessionExistInThisTime = await this.findSessionExistInThisTime(
+      sessionStart,
+      sessionEnd,
+      sessionDto?.hallId,
+    );
     if (sessionExistInThisTime) {
       throw new BadRequestException(
-        `Session exist in this time (${convertDate(sessionExistInThisTime.startDate)} - ${convertDate(sessionExistInThisTime.endDate)})`);
+        `Session exist in this time (${convertDate(
+          sessionExistInThisTime.startDate,
+        )} - ${convertDate(sessionExistInThisTime.endDate)})`,
+      );
     }
 
     session.coefficient = sessionDto.sessionTime.coefficient;
@@ -161,19 +179,15 @@ export class SessionManagementService {
       throw new InternalServerErrorException('Error while updating session');
     }
 
-    return this.mapper.map(
-      sessionUpdated,
-      Session,
-      SessionViewDto,
-    );
+    return this.mapper.map(sessionUpdated, Session, SessionViewDto);
   }
 
   async removeFromBooking(seatId: string): Promise<SessionSeatViewDto> {
     const sessionSeat = await this.sessionSeatRepository
       .getById(seatId)
-      .include(x => x.session)
-      .include(x => x.bookedOrder)
-      .include(x => x.seat);
+      .include((x) => x.session)
+      .include((x) => x.bookedOrder)
+      .include((x) => x.seat);
 
     if (!sessionSeat) {
       throw new BadRequestException('Session seat is not exist');
@@ -185,9 +199,13 @@ export class SessionManagementService {
 
     if (sessionSeat?.ticketState === TicketState.Booked) {
       const bookedOrder = await this.bookedOrderRepository
-        .getById(sessionSeat?.bookedOrder?.id).include(x => x.sessionSeats);
-      bookedOrder.sessionSeats = bookedOrder?.sessionSeats?.filter(x => x.id !== sessionSeat?.id);
-      bookedOrder.totalPrice -= sessionSeat?.seat?.price * sessionSeat?.session?.coefficient;
+        .getById(sessionSeat?.bookedOrder?.id)
+        .include((x) => x.sessionSeats);
+      bookedOrder.sessionSeats = bookedOrder?.sessionSeats?.filter(
+        (x) => x.id !== sessionSeat?.id,
+      );
+      bookedOrder.totalPrice -=
+        sessionSeat?.seat?.price * sessionSeat?.session?.coefficient;
       await this.bookedOrderRepository.update(bookedOrder);
     }
 
@@ -195,16 +213,21 @@ export class SessionManagementService {
     sessionSeat.bookedOrder = null;
     sessionSeat.blockedTime = null;
 
-    const sessionSeatUpdated = await this.sessionSeatRepository.update(sessionSeat);
+    const sessionSeatUpdated = await this.sessionSeatRepository.update(
+      sessionSeat,
+    );
 
     if (!sessionSeatUpdated) {
-      throw new InternalServerErrorException('Error while updating session seat');
+      throw new InternalServerErrorException(
+        'Error while updating session seat',
+      );
     }
-    const sessionSeatResult = await this.sessionSeatRepository.getById(seatId)
-      .include(x => x.seat)
-      .thenInclude(x => x.row)
-      .include(x => x.seat)
-      .thenInclude(x => x.seatType);
+    const sessionSeatResult = await this.sessionSeatRepository
+      .getById(seatId)
+      .include((x) => x.seat)
+      .thenInclude((x) => x.row)
+      .include((x) => x.seat)
+      .thenInclude((x) => x.seatType);
     return this.mapper.map(sessionSeatResult, SessionSeat, SessionSeatViewDto);
   }
 
@@ -212,9 +235,12 @@ export class SessionManagementService {
     try {
       const session = await this.sessionRepository
         .getById(id)
-        .include(x => x.sessionSeats);
+        .include((x) => x.sessionSeats);
       session.deleted = true;
-      session.sessionSeats = session.sessionSeats?.map(sessionSeat => ({ ...sessionSeat, deleted: true }));
+      session.sessionSeats = session.sessionSeats?.map((sessionSeat) => ({
+        ...sessionSeat,
+        deleted: true,
+      }));
       await this.sessionRepository.update(session);
       return id;
     } catch (err) {
@@ -225,18 +251,18 @@ export class SessionManagementService {
   async findAll(name: string): Promise<SessionViewDto[]> {
     const sessionQuery = this.sessionRepository
       .getAll()
-      .orderBy(x => x.startDate)
-      .include(x => x.movie)
-      .include(x => x.hall)
-      .thenInclude(x => x.cinema);
+      .orderBy((x) => x.startDate)
+      .include((x) => x.movie)
+      .include((x) => x.hall)
+      .thenInclude((x) => x.cinema);
     const sessions = name
       ? await sessionQuery
-        .where(x => x.movie.name)
-        .contains(name, { matchCase: false })
-        .or(x => x.hall.name)
-        .contains(name, { matchCase: false })
-        .or(x => x.hall.cinema.name)
-        .contains(name, { matchCase: false })
+          .where((x) => x.movie.name)
+          .contains(name, { matchCase: false })
+          .or((x) => x.hall.name)
+          .contains(name, { matchCase: false })
+          .or((x) => x.hall.cinema.name)
+          .contains(name, { matchCase: false })
       : await sessionQuery;
     return this.mapper.mapArray(sessions, Session, SessionViewDto);
   }
@@ -244,15 +270,15 @@ export class SessionManagementService {
   async findOne(id: string): Promise<SessionDetailsViewDto> {
     const session = await this.sessionRepository
       .getById(id)
-      .include(x => x.movie)
-      .include(x => x.hall)
-      .thenInclude(x => x.cinema)
-      .include(x => x.sessionSeats)
-      .thenInclude(x => x.seat)
-      .thenInclude(x => x.row)
-      .include(x => x.sessionSeats)
-      .thenInclude(x => x.seat)
-      .thenInclude(x => x.seatType);
+      .include((x) => x.movie)
+      .include((x) => x.hall)
+      .thenInclude((x) => x.cinema)
+      .include((x) => x.sessionSeats)
+      .thenInclude((x) => x.seat)
+      .thenInclude((x) => x.row)
+      .include((x) => x.sessionSeats)
+      .thenInclude((x) => x.seat)
+      .thenInclude((x) => x.seatType);
 
     if (!session) {
       throw new NotFoundException('Session is not exist');
@@ -274,7 +300,11 @@ export class SessionManagementService {
     return sessionSeats;
   }
 
-  private async findSessionExistInThisTime(sessionStart: Date, sessionEnd: Date, hallId: string): Promise<Session> {
+  private async findSessionExistInThisTime(
+    sessionStart: Date,
+    sessionEnd: Date,
+    hallId: string,
+  ): Promise<Session> {
     return await this.sessionTempRepository.findOne({
       where: [
         {

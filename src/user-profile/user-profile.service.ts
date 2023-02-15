@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
@@ -21,45 +26,70 @@ export class UserProfileService {
     private mailService: MailService,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly userRepository: UserRepository,
-  ) {
-  }
+  ) {}
 
-  async updateAsync(id: string, userProfileDto: UpdateUserProfileDto): Promise<UserProfileUpdateViewDto> {
+  async updateAsync(
+    id: string,
+    userProfileDto: UpdateUserProfileDto,
+  ): Promise<UserProfileUpdateViewDto> {
     const userProfile = await this.userProfileRepository
       .getById(id)
-      .include(x => x.user);
+      .include((x) => x.user);
 
     if (!userProfile) {
       throw new BadRequestException('User is not found');
     }
 
-    if (userProfile.user.provider !== AuthProviderEnum.LOCAL && (userProfileDto?.email || userProfileDto?.newPassword)) {
-      throw new BadRequestException('You cannot change your email and/or password because you were authorized through other services');
+    if (
+      userProfile.user.provider !== AuthProviderEnum.LOCAL &&
+      (userProfileDto?.email || userProfileDto?.newPassword)
+    ) {
+      throw new BadRequestException(
+        'You cannot change your email and/or password because you were authorized through other services',
+      );
     }
 
-    if (userProfileDto?.name && userProfileDto?.name !== userProfile.user.name) {
+    if (
+      userProfileDto?.name &&
+      userProfileDto?.name !== userProfile.user.name
+    ) {
       userProfile.user.name = userProfileDto.name;
     }
 
-    if (userProfileDto?.newPassword && !userProfileDto?.oldPassword ||
-      !userProfileDto?.newPassword && userProfileDto?.oldPassword) {
-      throw new BadRequestException('You must enter both the new and old passwords');
+    if (
+      (userProfileDto?.newPassword && !userProfileDto?.oldPassword) ||
+      (!userProfileDto?.newPassword && userProfileDto?.oldPassword)
+    ) {
+      throw new BadRequestException(
+        'You must enter both the new and old passwords',
+      );
     }
 
     if (userProfileDto?.newPassword && userProfileDto?.oldPassword) {
-      const isPasswordsEquals = await bcrypt.compare(userProfileDto.oldPassword, userProfile.user.passwordHash);
+      const isPasswordsEquals = await bcrypt.compare(
+        userProfileDto.oldPassword,
+        userProfile.user.passwordHash,
+      );
       if (!isPasswordsEquals) {
-        throw new BadRequestException('Old password does not match current password');
+        throw new BadRequestException(
+          'Old password does not match current password',
+        );
       }
 
       if (userProfileDto?.newPassword === userProfileDto?.oldPassword) {
         throw new BadRequestException('New password cannot match old password');
       }
 
-      userProfile.user.passwordHash = await bcrypt.hash(userProfileDto.newPassword, 5);
+      userProfile.user.passwordHash = await bcrypt.hash(
+        userProfileDto.newPassword,
+        5,
+      );
     }
 
-    if (userProfileDto?.email && userProfileDto?.email !== userProfile.user.email) {
+    if (
+      userProfileDto?.email &&
+      userProfileDto?.email !== userProfile.user.email
+    ) {
       userProfile.user.email = userProfileDto.email;
       userProfile.user.isActivated = false;
       const activationLink = uuid.v4();
@@ -69,7 +99,8 @@ export class UserProfileService {
         await this.mailService.sendUserConfirmationLinkAsync(
           userProfile.user.name,
           userProfile.user.email,
-          `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`);
+          `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`,
+        );
       } catch (err) {
         throw new InternalServerErrorException('Error while sending email');
       }
@@ -83,26 +114,26 @@ export class UserProfileService {
   async findOneAsync(id: string): Promise<UserProfileViewDto> {
     const userProfile = await this.userProfileRepository
       .getById(id)
-      .include(x => x.user)
-      .include(x => x.bookedOrders)
-      .thenInclude(x => x.sessionSeats)
-      .thenInclude(x => x.session)
-      .orderBy(x => x.startDate)
-      .thenInclude(x => x.movie)
-      .include(x => x.bookedOrders)
-      .thenInclude(x => x.sessionSeats)
-      .thenInclude(x => x.session)
-      .thenInclude(x => x.hall)
-      .thenInclude(x => x.cinema)
-      .thenInclude(x => x.address)
-      .include(x => x.bookedOrders)
-      .thenInclude(x => x.sessionSeats)
-      .thenInclude(x => x.seat)
-      .thenInclude(x => x.seatType)
-      .include(x => x.bookedOrders)
-      .thenInclude(x => x.sessionSeats)
-      .thenInclude(x => x.seat)
-      .thenInclude(x => x.row);
+      .include((x) => x.user)
+      .include((x) => x.bookedOrders)
+      .thenInclude((x) => x.sessionSeats)
+      .thenInclude((x) => x.session)
+      .orderBy((x) => x.startDate)
+      .thenInclude((x) => x.movie)
+      .include((x) => x.bookedOrders)
+      .thenInclude((x) => x.sessionSeats)
+      .thenInclude((x) => x.session)
+      .thenInclude((x) => x.hall)
+      .thenInclude((x) => x.cinema)
+      .thenInclude((x) => x.address)
+      .include((x) => x.bookedOrders)
+      .thenInclude((x) => x.sessionSeats)
+      .thenInclude((x) => x.seat)
+      .thenInclude((x) => x.seatType)
+      .include((x) => x.bookedOrders)
+      .thenInclude((x) => x.sessionSeats)
+      .thenInclude((x) => x.seat)
+      .thenInclude((x) => x.row);
 
     if (!userProfile) {
       throw new NotFoundException('User is not exist');

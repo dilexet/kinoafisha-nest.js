@@ -1,4 +1,13 @@
-import { Controller, Post, Res, UploadedFile, HttpStatus, BadRequestException, Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Res,
+  UploadedFile,
+  HttpStatus,
+  BadRequestException,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiFile } from './decorators/api-file.decorator';
 import { Response } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -11,8 +20,7 @@ import { RoleGuard } from '../authorize/guards/role.guard';
 @ApiTags('Image upload')
 @Controller('image-upload')
 export class ImageUploadController {
-  constructor(private readonly imageUploadService: ImageUploadService) {
-  }
+  constructor(private readonly imageUploadService: ImageUploadService) {}
 
   @ApiBearerAuth()
   @hasRole(RoleEnum.Admin)

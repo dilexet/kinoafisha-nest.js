@@ -8,20 +8,29 @@ import { Role } from '../entity/role';
 export class RoleRepository extends LinqRepository<Role> {
   public constructor(
     @InjectDataSource()
-      dataSource: DataSource,
+    dataSource: DataSource,
   ) {
     super(dataSource, Role);
   }
 
   getById(id: number | string): IQuery<Role, Role> {
-    return super.getById(id).and(x => x.deleted).isFalse();
+    return super
+      .getById(id)
+      .and((x) => x.deleted)
+      .isFalse();
   }
 
   getOne(): IQuery<Role, Role> {
-    return super.getOne().where(x => x.deleted).isFalse();
+    return super
+      .getOne()
+      .where((x) => x.deleted)
+      .isFalse();
   }
 
   getAll(): IQuery<Role, Role[]> {
-    return super.getAll().where(x => x.deleted).isFalse();
+    return super
+      .getAll()
+      .where((x) => x.deleted)
+      .isFalse();
   }
 }

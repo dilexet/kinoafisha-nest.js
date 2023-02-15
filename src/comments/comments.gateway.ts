@@ -10,7 +10,6 @@ import { Server, Socket } from 'socket.io';
 import { CommentsService } from './comments.service';
 import { CommentDto } from './dto/comment.dto';
 
-
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -18,9 +17,10 @@ import { CommentDto } from './dto/comment.dto';
   serveClient: false,
   namespace: 'comments-gateway',
 })
-export class CommentsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly commentsService: CommentsService) {
-  }
+export class CommentsGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  constructor(private readonly commentsService: CommentsService) {}
 
   @WebSocketServer() server: Server;
 

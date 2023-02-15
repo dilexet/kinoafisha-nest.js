@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { AutoMap } from '@automapper/classes';
 
 export class MovieDto {
@@ -39,7 +46,10 @@ export class MovieDto {
 
   @ApiProperty({
     description: 'Movie genre ids',
-    default: ['c969159d-f715-4e49-9ebe-6e4e403f06a3', '49adb16f-7024-4ef7-aed4-be982ccf38c2'],
+    default: [
+      'c969159d-f715-4e49-9ebe-6e4e403f06a3',
+      '49adb16f-7024-4ef7-aed4-be982ccf38c2',
+    ],
   })
   @IsArray()
   @IsUUID(4, { each: true })

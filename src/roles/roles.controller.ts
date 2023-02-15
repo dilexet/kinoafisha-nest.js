@@ -13,8 +13,7 @@ import { RoleGuard } from '../authorize/guards/role.guard';
 @ApiTags('Roles')
 @Controller('roles')
 export class RolesController {
-  constructor(private readonly rolesService: RolesService) {
-  }
+  constructor(private readonly rolesService: RolesService) {}
 
   @Get()
   async findAll(@Res() res: Response) {

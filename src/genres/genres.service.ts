@@ -10,8 +10,7 @@ export class GenresService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private genreRepository: GenreRepository,
-  ) {
-  }
+  ) {}
 
   async findAllAsync(): Promise<GenreViewDto[]> {
     const genres = await this.genreRepository.getAll();

@@ -10,8 +10,7 @@ export class MoviesService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private movieRepository: MovieRepository,
-  ) {
-  }
+  ) {}
 
   async findAllAsync(): Promise<MovieViewDto[]> {
     const movies = await this.movieRepository.getAll();

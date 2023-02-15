@@ -6,8 +6,7 @@ import { Response } from 'express';
 @ApiTags('Seat types')
 @Controller('seat-types')
 export class SeatTypesController {
-  constructor(private readonly seatTypesService: SeatTypesService) {
-  }
+  constructor(private readonly seatTypesService: SeatTypesService) {}
 
   @Get()
   async findAll(@Res() res: Response) {
