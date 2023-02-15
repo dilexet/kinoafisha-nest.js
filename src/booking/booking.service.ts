@@ -25,27 +25,32 @@ import {
 } from '../shared/constants/movie-popularity';
 import * as moment from 'moment';
 import { PayloadArray } from './types/payload';
+import { MailService } from '../mail/mail.service';
+import { convertAddressToString } from '../shared/utils/convert-address-to-string';
+import { convertDateToSessionFormat } from '../shared/utils/convert-date';
 
 @Injectable()
 export class BookingService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
+    private mailService: MailService,
     private readonly sessionRepository: SessionRepository,
     private readonly sessionSeatRepository: SessionSeatRepository,
     private readonly userProfileRepository: UserProfileRepository,
     private readonly bookedOrderRepository: BookedOrderRepository,
     private readonly moviePopularityService: MoviePopularityService,
-  ) {}
+  ) {
+  }
 
   async bookTicketsAsync(
     id: string,
     bookTicketsDto: BookTicketsDto,
   ): Promise<BookedOrderViewDto> {
-    const user = await this.userProfileRepository.getById(
+    const userProfile = await this.userProfileRepository.getById(
       bookTicketsDto.userProfileId,
-    );
+    ).include(x => x.user);
 
-    if (!user) {
+    if (!userProfile) {
       throw new NotFoundException('User is not exist');
     }
 
@@ -53,13 +58,16 @@ export class BookingService {
       .getById(id)
       .include((x) => x.sessionSeats)
       .thenInclude((x) => x.seat)
-      .include((x) => x.movie);
+      .include((x) => x.movie)
+      .include(x => x.hall)
+      .thenInclude(x => x.cinema)
+      .thenInclude(x => x.address);
 
     if (!session) {
       throw new NotFoundException('Session is not exist');
     }
     const bookingOrder = new BookedOrder();
-    bookingOrder.user = user;
+    bookingOrder.user = userProfile;
     bookingOrder.totalPrice = 0;
     bookingOrder.sessionSeats = [];
 
@@ -92,6 +100,23 @@ export class BookingService {
       session.movie.id,
       MoviePopularityByBooking,
     );
+
+    try {
+      await this.mailService.sendBookingOrderAsync(
+        userProfile.user.name,
+        userProfile.user.email,
+        bookedOrderCreated.id,
+        bookedOrderCreated.totalPrice,
+        bookedOrderCreated?.sessionSeats?.length,
+        convertDateToSessionFormat(session.startDate),
+        session.movie.name,
+        session.hall.cinema.name,
+        session.hall.name,
+        convertAddressToString(session.hall.cinema.address),
+      );
+    } catch (err) {
+      throw new InternalServerErrorException('Error while sending email');
+    }
 
     return this.mapper.map(bookedOrderCreated, BookedOrder, BookedOrderViewDto);
   }

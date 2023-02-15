@@ -17,7 +17,7 @@ import { SessionSeat } from '../../database/entity/session-seat';
 import { UserProfileUpdateViewDto } from '../dto/user-profile-update-view.dto';
 import { User } from '../../database/entity/user';
 import { convertDate } from '../../shared/utils/convert-date';
-import { convertAddress } from '../../shared/utils/convert-address';
+import { convertAddressToString } from '../../shared/utils/convert-address-to-string';
 
 @Injectable()
 export class UserProfileMapperProfile extends AutomapperProfile {
@@ -102,7 +102,7 @@ export class UserProfileMapperProfile extends AutomapperProfile {
         forMember(
           (dest) => dest.address,
           mapFrom((source) =>
-            convertAddress(
+            convertAddressToString(
               source?.sessionSeats[0]?.session?.hall?.cinema?.address,
             ),
           ),

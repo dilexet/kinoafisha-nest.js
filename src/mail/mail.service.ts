@@ -41,4 +41,27 @@ export class MailService {
       },
     });
   }
+
+  async sendBookingOrderAsync(
+    name: string,
+    email: string,
+    id: string,
+    totalPrice: number,
+    numberOfTickets: number,
+    sessionStartDate: string,
+    movieName: string,
+    cinemaName: string,
+    hallName,
+    address: string,
+  ) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject:
+        `Your order #${id} has been successfully completed`,
+      template: './booking-order',
+      context: {
+        name, id, totalPrice, numberOfTickets, sessionStartDate, movieName, cinemaName, hallName, address,
+      },
+    });
+  }
 }

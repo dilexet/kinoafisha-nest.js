@@ -14,6 +14,7 @@ import { UserProfileRepository } from '../database/repository/user-profile.repos
 import { MovieRepository } from '../database/repository/movie.repository';
 import { MoviePopularityService } from '../shared/utils/movie-popularity-service';
 import { BookingGateway } from './booking.gateway';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { BookingGateway } from './booking.gateway';
   controllers: [BookingController],
   providers: [
     BookingGateway,
+    MailService,
     BookTicketsMapperProfile,
     BookingService,
     MovieRepository,
@@ -32,4 +34,5 @@ import { BookingGateway } from './booking.gateway';
     SessionSeatRepository,
   ],
 })
-export class BookingModule {}
+export class BookingModule {
+}
