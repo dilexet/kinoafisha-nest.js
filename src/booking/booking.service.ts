@@ -88,7 +88,7 @@ export class BookingService {
       bookingOrder.sessionSeats.push(sessionSeat);
     }
 
-    bookingOrder.totalPrice = bookingOrder.totalPrice * session.coefficient;
+    bookingOrder.totalPrice = +(bookingOrder.totalPrice * session.coefficient).toFixed(2);
 
     const bookedOrderCreated = await this.bookedOrderRepository.create(
       bookingOrder,
@@ -162,7 +162,7 @@ export class BookingService {
           throw new InternalServerErrorException('Session seat did not find');
         }
 
-        seat.price = seat.price * sessionDetails.coefficient;
+        seat.price = +(seat.price * sessionDetails.coefficient).toFixed(2);
         seat.ticketState = sessionSeat.ticketState;
         seat.sessionSeatId = sessionSeat.id;
 

@@ -36,7 +36,8 @@ export class SessionManagementService {
     private readonly bookedOrderRepository: BookedOrderRepository,
     @InjectRepository(Session)
     private readonly sessionTempRepository: Repository<Session>,
-  ) {}
+  ) {
+  }
 
   async create(sessionDto: SessionCreateDto): Promise<SessionViewDto[]> {
     const hallExist = await this.hallRepository
@@ -81,7 +82,7 @@ export class SessionManagementService {
       }
 
       const session: Session = new Session();
-      session.coefficient = sessionTime.coefficient;
+      session.coefficient = Math.abs(sessionTime.coefficient);
       session.startDate = sessionStart;
       session.endDate = sessionEnd;
       session.sessionSeats = sessionSeats.map((x) => ({ ...x, id: undefined }));
@@ -168,7 +169,7 @@ export class SessionManagementService {
       );
     }
 
-    session.coefficient = sessionDto.sessionTime.coefficient;
+    session.coefficient = Math.abs(sessionDto.sessionTime.coefficient);
     session.startDate = sessionStart;
     session.endDate = sessionEnd;
     session.id = id;
@@ -205,7 +206,7 @@ export class SessionManagementService {
         (x) => x.id !== sessionSeat?.id,
       );
       bookedOrder.totalPrice -=
-        sessionSeat?.seat?.price * sessionSeat?.session?.coefficient;
+        +(sessionSeat?.seat?.price * sessionSeat?.session?.coefficient).toFixed(2);
       await this.bookedOrderRepository.update(bookedOrder);
     }
 
@@ -257,12 +258,12 @@ export class SessionManagementService {
       .thenInclude((x) => x.cinema);
     const sessions = name
       ? await sessionQuery
-          .where((x) => x.movie.name)
-          .contains(name, { matchCase: false })
-          .or((x) => x.hall.name)
-          .contains(name, { matchCase: false })
-          .or((x) => x.hall.cinema.name)
-          .contains(name, { matchCase: false })
+        .where((x) => x.movie.name)
+        .contains(name, { matchCase: false })
+        .or((x) => x.hall.name)
+        .contains(name, { matchCase: false })
+        .or((x) => x.hall.cinema.name)
+        .contains(name, { matchCase: false })
       : await sessionQuery;
     return this.mapper.mapArray(sessions, Session, SessionViewDto);
   }

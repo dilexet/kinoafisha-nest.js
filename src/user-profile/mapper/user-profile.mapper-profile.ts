@@ -49,7 +49,7 @@ export class UserProfileMapperProfile extends AutomapperProfile {
         ),
         forMember(
           (dest) => dest.price,
-          mapFrom((source) => source.seat.price * source.session.coefficient),
+          mapFrom((source) => +(source.seat.price * source.session.coefficient).toFixed(2)),
         ),
       );
 
