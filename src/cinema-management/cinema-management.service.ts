@@ -77,7 +77,6 @@ export class CinemaManagementService {
       await this.cinemaRepository.update(cinemaExist);
       return id;
     } catch (err) {
-      console.log(err);
       throw new BadRequestException('Cinema is not exist');
     }
   }

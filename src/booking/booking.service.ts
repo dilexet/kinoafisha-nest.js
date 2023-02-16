@@ -285,7 +285,6 @@ export class BookingService {
       await this.sessionSeatRepository.update(sessionSeatsExpires);
       return payload;
     } catch (e) {
-      console.log(e);
       return null;
     }
   }

@@ -116,7 +116,6 @@ export class HallManagementService {
       await this.hallRepository.update(hall);
       return id;
     } catch (err) {
-      console.log(err);
       throw new BadRequestException('Error while removing hall');
     }
   }

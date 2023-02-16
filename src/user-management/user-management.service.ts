@@ -129,7 +129,6 @@ export class UserManagementService {
       await this.userRepository.update(user);
       return id;
     } catch (err) {
-      console.log(err);
       throw new BadRequestException('User is not exist');
     }
   }
