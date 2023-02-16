@@ -5,6 +5,9 @@ export class SeatDetailsViewDto {
   id: string;
 
   @AutoMap()
+  sessionSeatId: string;
+
+  @AutoMap()
   numberSeat: number;
 
   @AutoMap()
@@ -12,6 +15,9 @@ export class SeatDetailsViewDto {
 
   @AutoMap()
   seatType: string;
+
+  @AutoMap()
+  seatTypeId: string;
 
   @AutoMap()
   ticketState: string;

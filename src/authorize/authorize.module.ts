@@ -39,8 +39,7 @@ import { TokenRepository } from '../database/repository/token.repository';
     AuthorizeService,
     UserRepository,
     RoleRepository,
-    TokenRepository
+    TokenRepository,
   ],
 })
-export class AuthorizeModule {
-}
+export class AuthorizeModule {}

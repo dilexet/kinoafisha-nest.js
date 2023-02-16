@@ -15,17 +15,13 @@ export class Seat extends BaseEntity {
   @AutoMap()
   price: number;
 
-  @ManyToOne(() => Row,
-    row => row.seats, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Row, (row) => row.seats, { onDelete: 'CASCADE' })
   row: Row;
 
-  @ManyToOne(() => SeatType,
-    seatType => seatType.seats,
-    { eager: true })
+  @ManyToOne(() => SeatType, (seatType) => seatType.seats, { eager: true })
   @AutoMap()
   seatType: SeatType;
 
-  @OneToMany(() => SessionSeat,
-    sessionSeat => sessionSeat.session)
+  @OneToMany(() => SessionSeat, (sessionSeat) => sessionSeat.session)
   sessionSeats: SessionSeat[];
 }

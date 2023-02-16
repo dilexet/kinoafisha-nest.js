@@ -6,8 +6,7 @@ import { Response } from 'express';
 @ApiTags('Genres')
 @Controller('genres')
 export class GenresController {
-  constructor(private readonly genresService: GenresService) {
-  }
+  constructor(private readonly genresService: GenresService) {}
 
   @Get()
   async findAll(@Res() res: Response) {

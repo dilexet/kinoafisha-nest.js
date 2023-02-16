@@ -15,16 +15,16 @@ import { SeatRepository } from '../database/repository/seat.repository';
 import { SeatTypeRepository } from '../database/repository/seat-type.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Cinema, Hall, Row, Seat, SeatType,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Cinema, Hall, Row, Seat, SeatType])],
   controllers: [HallManagementController],
-  providers: [HallManagementService, HallManagementMapperProfile,
-    CinemaRepository, HallRepository,
-    RowRepository, SeatRepository, SeatTypeRepository,
+  providers: [
+    HallManagementService,
+    HallManagementMapperProfile,
+    CinemaRepository,
+    HallRepository,
+    RowRepository,
+    SeatRepository,
+    SeatTypeRepository,
   ],
 })
-export class HallManagementModule {
-}
+export class HallManagementModule {}

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { HallDto } from './dto/hall.dto';
 import { Hall } from '../database/entity/hall';
 import { InjectMapper } from '@automapper/nestjs';
@@ -20,20 +25,22 @@ export class HallManagementService {
     private readonly hallRepository: HallRepository,
     private readonly seatTypeRepository: SeatTypeRepository,
     private readonly rowRepository: RowRepository,
-  ) {
-  }
+  ) {}
 
   async create(hallDto: HallDto): Promise<HallViewDto> {
     const cinemaExist = await this.cinemaRepository
       .getById(hallDto.cinemaId)
-      .include(x => x.halls);
+      .include((x) => x.halls);
 
     if (!cinemaExist) {
       throw new BadRequestException('Cinema is not exist');
     }
-    if (cinemaExist?.halls?.find(hall => hall.name === hallDto.name && hall.deleted === false)) {
+    if (
+      cinemaExist?.halls?.find(
+        (hall) => hall.name === hallDto.name && hall.deleted === false,
+      )
+    ) {
       throw new BadRequestException('Hall with this name is exist');
-
     }
     const hall = this.mapper.map(hallDto, HallDto, Hall);
 
@@ -51,18 +58,23 @@ export class HallManagementService {
   async update(id: string, hallDto: HallDto): Promise<HallViewDto> {
     const cinemaExist = await this.cinemaRepository
       .getById(hallDto.cinemaId)
-      .include(x => x.halls);
+      .include((x) => x.halls);
 
     if (!cinemaExist) {
       throw new BadRequestException('Cinema is not exist');
     }
-    if (cinemaExist?.halls?.find(hall => hall.name == hallDto.name &&
-      hall.id != id &&
-      hall.deleted === false)) {
+    if (
+      cinemaExist?.halls?.find(
+        (hall) =>
+          hall.name == hallDto.name && hall.id != id && hall.deleted === false,
+      )
+    ) {
       throw new BadRequestException('Hall with this name is exist');
     }
 
-    const hallExist = await this.hallRepository.getById(id).include(x => x.rows);
+    const hallExist = await this.hallRepository
+      .getById(id)
+      .include((x) => x.rows);
 
     if (!hallExist) {
       throw new BadRequestException('Hall is not exist');
@@ -87,21 +99,23 @@ export class HallManagementService {
   async remove(id: string): Promise<string> {
     const hall = await this.hallRepository
       .getById(id)
-      .include(x => x.rows)
-      .thenInclude(x => x.seats)
-      .include(x => x.sessions);
+      .include((x) => x.rows)
+      .thenInclude((x) => x.seats)
+      .include((x) => x.sessions);
     try {
       hall.deleted = true;
-      hall.rows = hall.rows.map(row => ({
+      hall.rows = hall.rows.map((row) => ({
         ...row,
         deleted: true,
-        seats: row.seats.map(seat => ({ ...seat, deleted: true })),
+        seats: row.seats.map((seat) => ({ ...seat, deleted: true })),
       }));
-      hall.sessions = hall.sessions.map(session => ({ ...session, deleted: true }));
+      hall.sessions = hall.sessions.map((session) => ({
+        ...session,
+        deleted: true,
+      }));
       await this.hallRepository.update(hall);
       return id;
     } catch (err) {
-      console.log(err);
       throw new BadRequestException('Error while removing hall');
     }
   }
@@ -109,13 +123,13 @@ export class HallManagementService {
   async findAll(name: string): Promise<HallViewDto[]> {
     const hallsQuery = this.hallRepository
       .getAll()
-      .include(x => x.rows)
-      .thenInclude(x => x.seats)
-      .include(x => x.cinema);
+      .include((x) => x.rows)
+      .thenInclude((x) => x.seats)
+      .include((x) => x.cinema);
     const halls = name
       ? await hallsQuery
-        .where(x => x.name)
-        .contains(name, { matchCase: false })
+          .where((x) => x.name)
+          .contains(name, { matchCase: false })
       : await hallsQuery;
 
     return this.mapper.mapArray(halls, Hall, HallViewDto);
@@ -124,12 +138,12 @@ export class HallManagementService {
   async findOne(id: string): Promise<HallViewDetailsDto> {
     const hall = await this.hallRepository
       .getById(id)
-      .include(x => x.cinema)
-      .include(x => x.rows)
-      .thenBy(x => x.numberRow)
-      .thenInclude(x => x.seats)
-      .thenBy(x => x.numberSeat)
-      .thenInclude(x => x.seatType);
+      .include((x) => x.cinema)
+      .include((x) => x.rows)
+      .thenBy((x) => x.numberRow)
+      .thenInclude((x) => x.seats)
+      .thenBy((x) => x.numberSeat)
+      .thenInclude((x) => x.seatType);
 
     if (!hall) {
       throw new NotFoundException('Hall is not exist');
@@ -138,14 +152,19 @@ export class HallManagementService {
     return this.mapper.map(hall, Hall, HallViewDetailsDto);
   }
 
-  private async setSeatTypes(rows: Row[], seatTypePrices: SeatTypePriceDto[]): Promise<Row[]> {
-    if (this.hasDuplicates(seatTypePrices.map(x => x.seatTypeId))) {
+  private async setSeatTypes(
+    rows: Row[],
+    seatTypePrices: SeatTypePriceDto[],
+  ): Promise<Row[]> {
+    if (this.hasDuplicates(seatTypePrices.map((x) => x.seatTypeId))) {
       throw new BadRequestException('Found several identical seat type price');
     }
 
     for (const row of rows) {
       for (const seat of row.seats) {
-        const seatTypePriceFound = seatTypePrices.find(type => type.seatTypeId == seat.seatType.id);
+        const seatTypePriceFound = seatTypePrices.find(
+          (type) => type.seatTypeId == seat.seatType.id,
+        );
         if (!seatTypePriceFound) {
           throw new BadRequestException('Seat type price did not find');
         }

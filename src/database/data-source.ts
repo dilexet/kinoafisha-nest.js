@@ -20,6 +20,7 @@ import { Session } from './entity/session';
 import { SessionSeat } from './entity/session-seat';
 import { BookedOrder } from './entity/booked-order';
 import { UserProfile } from './entity/user-profile';
+import { Comment } from './entity/comment';
 
 const options: DataSourceOptions & SeederOptions = {
   type: 'postgres',
@@ -32,11 +33,23 @@ const options: DataSourceOptions & SeederOptions = {
   synchronize: true,
   logging: false,
   entities: [
-    User, Role, Token, UserProfile,
-    Movie, Genre, Country,
-    Cinema, Hall, Row, Seat, SeatType, Address,
-    Session, SessionSeat,
+    User,
+    Role,
+    Token,
+    UserProfile,
+    Movie,
+    Genre,
+    Country,
+    Cinema,
+    Hall,
+    Row,
+    Seat,
+    SeatType,
+    Address,
+    Session,
+    SessionSeat,
     BookedOrder,
+    Comment,
   ],
   seeds: [UserSeed, GenreSeed, SeatTypeSeed],
   migrations: [],

@@ -17,16 +17,21 @@ export class TokenService {
     private jwtService: JwtService,
     private tokenRepository: TokenRepository,
   ) {
-    this.oAuth2Client = new OAuth2Client(googleConfigConstants.GOOGLE_ID, googleConfigConstants.GOOGLE_SECRET);
+    this.oAuth2Client = new OAuth2Client(
+      googleConfigConstants.GOOGLE_ID,
+      googleConfigConstants.GOOGLE_SECRET,
+    );
   }
 
   async generateTokensAsync(user: User) {
     try {
       const payload = {
         userId: user.id,
+        userProfileId: user?.userProfile?.id,
         roleId: user.role.id,
         role: user.role.name,
         email: user.email,
+        name: user.name,
         isActivated: user.isActivated,
       };
       const accessToken = await this.jwtService.signAsync(payload, {
@@ -34,7 +39,9 @@ export class TokenService {
         expiresIn: jwtConfigConstants.JWT_ACCESS_EXPIRES_IN,
       });
 
-      const expiresInMilliseconds = ms(jwtConfigConstants.JWT_REFRESH_EXPIRES_IN);
+      const expiresInMilliseconds = ms(
+        jwtConfigConstants.JWT_REFRESH_EXPIRES_IN,
+      );
       const expireDate = new Date();
       expireDate.setMilliseconds(expiresInMilliseconds);
 
@@ -48,7 +55,8 @@ export class TokenService {
       token.user = user;
       await this.tokenRepository.create(token);
       return {
-        accessToken, refreshToken,
+        accessToken,
+        refreshToken,
       };
     } catch (err) {
       throw new Error(err);
@@ -57,16 +65,15 @@ export class TokenService {
 
   async validateRefreshTokenAsync(token: string) {
     try {
-      const refreshTokenData =
-        await this.jwtService.verifyAsync(
-          token,
-          { secret: jwtConfigConstants.JWT_REFRESH_SECRET });
+      const refreshTokenData = await this.jwtService.verifyAsync(token, {
+        secret: jwtConfigConstants.JWT_REFRESH_SECRET,
+      });
       if (!refreshTokenData) {
         return null;
       }
       const refreshToken = await this.tokenRepository
         .getOne()
-        .where(x => x.refreshToken)
+        .where((x) => x.refreshToken)
         .equal(token, { matchCase: true });
       if (!refreshToken) {
         return null;
@@ -82,7 +89,7 @@ export class TokenService {
     try {
       const refreshToken = await this.tokenRepository
         .getOne()
-        .where(x => x.refreshToken)
+        .where((x) => x.refreshToken)
         .equal(token, { matchCase: true });
       await this.tokenRepository.delete(refreshToken);
     } catch (err) {
@@ -107,11 +114,8 @@ export class TokenService {
   private async clearRefreshTokens() {
     const expireTokens = await this.tokenRepository
       .getAll()
-      .where(x => x.expireDate)
+      .where((x) => x.expireDate)
       .lessThanOrEqual(new Date());
-    for (const expireToken of expireTokens) {
-      await this.tokenRepository.delete(expireToken.id);
-      console.log(expireToken.id);
-    }
+    await this.tokenRepository.delete(expireTokens);
   }
 }

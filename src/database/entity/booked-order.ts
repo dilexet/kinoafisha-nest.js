@@ -10,15 +10,11 @@ export class BookedOrder extends BaseEntity {
   @AutoMap()
   totalPrice: number;
 
-  @ManyToOne(() => UserProfile,
-    user => user.bookedOrders,
-    { cascade: true })
+  @ManyToOne(() => UserProfile, (user) => user.bookedOrders, { cascade: true })
   @AutoMap()
   user: UserProfile;
 
-  @OneToMany(() => SessionSeat,
-    user => user.bookedOrder,
-    { cascade: true })
+  @OneToMany(() => SessionSeat, (user) => user.bookedOrder, { cascade: true })
   @AutoMap()
   sessionSeats: SessionSeat[];
 }

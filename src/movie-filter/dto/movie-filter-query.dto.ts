@@ -1,3 +1,4 @@
 export class MovieFilterQueryDto {
-  movie?: string;
+  onlyPopular: boolean;
+  onlyFuture: boolean;
 }

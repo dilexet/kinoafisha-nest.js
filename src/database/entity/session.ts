@@ -19,21 +19,24 @@ export class Session extends BaseEntity {
   @AutoMap()
   coefficient: number;
 
-  @ManyToOne(() => Movie,
-    movie => movie.sessions,
-    { cascade: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Movie, (movie) => movie.sessions, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @AutoMap()
   movie: Movie;
 
-  @ManyToOne(() => Hall,
-    hall => hall.sessions,
-    { cascade: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Hall, (hall) => hall.sessions, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @AutoMap()
   hall: Hall;
 
-  @OneToMany(() => SessionSeat,
-    sessionSeat => sessionSeat.session,
-    { cascade: true, eager: true })
+  @OneToMany(() => SessionSeat, (sessionSeat) => sessionSeat.session, {
+    cascade: true,
+    eager: true,
+  })
   @AutoMap()
   sessionSeats: SessionSeat[];
 }

@@ -1,7 +1,8 @@
 import {
-  BadRequestException, ForbiddenException,
+  BadRequestException,
   Injectable,
-  InternalServerErrorException, NotFoundException,
+  InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -29,26 +30,32 @@ export class AuthorizeService {
     @InjectMapper() private readonly mapper: Mapper,
     private userRepository: UserRepository,
     private roleRepository: RoleRepository,
-  ) {
-  }
+  ) {}
 
   async loginAsync(userDto: LoginDto) {
-    const user = await this.userRepository.getOne()
-      .where(x => x.email).equal(userDto.email);
+    const user = await this.userRepository
+      .getOne()
+      .include((x) => x.userProfile)
+      .include((x) => x.role)
+      .where((x) => x.email)
+      .equal(userDto.email);
     if (!user) {
       throw new BadRequestException('User is not exist');
     }
-    const isPasswordsEquals = await bcrypt.compare(userDto.password, user.passwordHash);
+    const isPasswordsEquals = await bcrypt.compare(
+      userDto.password,
+      user.passwordHash,
+    );
     if (!isPasswordsEquals) {
       throw new BadRequestException('Login or password is incorrect');
     }
 
     if (user.isBlocked) {
-      throw new ForbiddenException('Your account has been blocked');
+      throw new BadRequestException('Your account has been blocked');
     }
 
     if (!user.isActivated) {
-      throw new ForbiddenException('You need to verify your email');
+      throw new BadRequestException('You need to verify your email');
     }
 
     try {
@@ -59,14 +66,18 @@ export class AuthorizeService {
   }
 
   async registrationAsync(userDto: RegisterDto) {
-    const candidate = await this.userRepository.getOne()
-      .where(x => x.email).equal(userDto.email);
+    const candidate = await this.userRepository
+      .getOne()
+      .where((x) => x.email)
+      .equal(userDto.email);
     if (candidate) {
       throw new BadRequestException('User with this email already exist');
     }
 
-    const role = await this.roleRepository.getOne()
-      .where(x => x.name).equal(RoleEnum.User);
+    const role = await this.roleRepository
+      .getOne()
+      .where((x) => x.name)
+      .equal(RoleEnum.User);
     if (!role) {
       throw new NotFoundException('Role is not exist');
     }
@@ -81,7 +92,6 @@ export class AuthorizeService {
       newUser.role = role;
       newUser.userProfile = new UserProfile();
 
-
       const user = await this.userRepository.create(newUser);
 
       const tokens = await this.tokenService.generateTokensAsync(user);
@@ -89,7 +99,8 @@ export class AuthorizeService {
       await this.mailService.sendUserConfirmationLinkAsync(
         userDto.name,
         userDto.email,
-        `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`);
+        `${appConfigConstants.API_URL}/authorize/activate/${activationLink}`,
+      );
 
       return tokens;
     } catch (err) {
@@ -110,22 +121,27 @@ export class AuthorizeService {
       throw new UnauthorizedException();
     }
 
-    const userId = await this.tokenService.validateRefreshTokenAsync(tokenDto.refreshToken);
+    const userId = await this.tokenService.validateRefreshTokenAsync(
+      tokenDto.refreshToken,
+    );
     if (!userId) {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userRepository.getById(userId);
+    const user = await this.userRepository
+      .getById(userId)
+      .include((x) => x.userProfile)
+      .include((x) => x.role);
     if (!user) {
       throw new UnauthorizedException();
     }
 
     if (user.isBlocked) {
-      throw new ForbiddenException('Your account has been blocked');
+      throw new UnauthorizedException('Your account has been blocked');
     }
 
     if (!user.isActivated) {
-      throw new ForbiddenException('You need to verify your email');
+      throw new UnauthorizedException('You need to verify your email');
     }
 
     const tokens = await this.tokenService.generateTokensAsync(user);
@@ -139,8 +155,10 @@ export class AuthorizeService {
   }
 
   async activateAsync(activationLink: string) {
-    const user = await this.userRepository.getOne()
-      .where(x => x.activationLink).equal(activationLink);
+    const user = await this.userRepository
+      .getOne()
+      .where((x) => x.activationLink)
+      .equal(activationLink);
     if (!user) {
       throw new BadRequestException('Incorrect activation link');
     }
@@ -158,25 +176,34 @@ export class AuthorizeService {
     const { name, email } = tokenPayload;
 
     const candidate = await this.userRepository
-      .getOne().where(x => x.email).equal(email);
+      .getOne()
+      .include((x) => x.userProfile)
+      .include((x) => x.role)
+      .where((x) => x.email)
+      .equal(email);
 
     if (!candidate) {
       return await this.registerGoogleUser(name, email);
     }
 
     if (candidate.provider === AuthProviderEnum.LOCAL) {
-      throw new BadRequestException('You need to authorize with login and password');
+      throw new BadRequestException(
+        'You need to authorize with login and password',
+      );
     }
 
     if (candidate.isBlocked) {
-      throw new ForbiddenException('Your account has been blocked');
+      throw new BadRequestException('Your account has been blocked');
     }
 
     return await this.tokenService.generateTokensAsync(candidate);
   }
 
   private async registerGoogleUser(name: string, email: string) {
-    const role = await this.roleRepository.getOne().where(x => x.name).equal(RoleEnum.User);
+    const role = await this.roleRepository
+      .getOne()
+      .where((x) => x.name)
+      .equal(RoleEnum.User);
     if (!role) {
       throw new InternalServerErrorException('You did not create roles');
     }

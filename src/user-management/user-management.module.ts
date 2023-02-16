@@ -11,11 +11,15 @@ import { RoleRepository } from '../database/repository/role.repository';
 import { TokenRepository } from '../database/repository/token.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Role]),
-  ],
+  imports: [TypeOrmModule.forFeature([User, Role])],
   controllers: [UserManagementController],
-  providers: [MailService, UserManagementService, UserManagementMapperProfile, UserRepository, RoleRepository, TokenRepository],
+  providers: [
+    MailService,
+    UserManagementService,
+    UserManagementMapperProfile,
+    UserRepository,
+    RoleRepository,
+    TokenRepository,
+  ],
 })
-export class UserManagementModule {
-}
+export class UserManagementModule {}

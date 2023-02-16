@@ -15,17 +15,20 @@ export class SessionSeat extends BaseEntity {
   @Column({ type: 'timestamptz', nullable: true, default: null })
   blockedTime: Date;
 
-  @ManyToOne(() => Seat,
-    seat => seat.sessionSeats,
-    { cascade: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Seat, (seat) => seat.sessionSeats, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @AutoMap()
   seat: Seat;
 
-  @ManyToOne(() => Session,
-    session => session.sessionSeats, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Session, (session) => session.sessionSeats, {
+    onDelete: 'CASCADE',
+  })
   session: Session;
 
-  @ManyToOne(() => BookedOrder,
-    bookedOrder => bookedOrder.sessionSeats)
+  @ManyToOne(() => BookedOrder, (bookedOrder) => bookedOrder.sessionSeats, {
+    onDelete: 'SET NULL',
+  })
   bookedOrder: BookedOrder;
 }

@@ -11,13 +11,27 @@ import { SessionSeat } from '../database/entity/session-seat';
 import { SessionSeatRepository } from '../database/repository/session-seat.repository';
 import { UserProfile } from '../database/entity/user-profile';
 import { UserProfileRepository } from '../database/repository/user-profile.repository';
+import { MovieRepository } from '../database/repository/movie.repository';
+import { MoviePopularityService } from '../shared/utils/movie-popularity-service';
+import { BookingGateway } from './booking.gateway';
+import { MailService } from '../mail/mail.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Session, BookedOrder, UserProfile, SessionSeat])],
+  imports: [
+    TypeOrmModule.forFeature([Session, BookedOrder, UserProfile, SessionSeat]),
+  ],
   controllers: [BookingController],
   providers: [
-    BookTicketsMapperProfile, BookingService,
-    SessionRepository, BookedOrderRepository, UserProfileRepository, SessionSeatRepository,
+    BookingGateway,
+    MailService,
+    BookTicketsMapperProfile,
+    BookingService,
+    MovieRepository,
+    MoviePopularityService,
+    SessionRepository,
+    BookedOrderRepository,
+    UserProfileRepository,
+    SessionSeatRepository,
   ],
 })
 export class BookingModule {

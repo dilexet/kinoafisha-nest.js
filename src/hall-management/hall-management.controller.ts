@@ -1,14 +1,32 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, Res, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  HttpStatus,
+  Res,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { HallManagementService } from './hall-management.service';
 import { HallDto } from './dto/hall.dto';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { hasRole } from '../authorize/decorators/roles.decorator';
+import RoleEnum from '../shared/enums/role.enum';
+import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
+import { RoleGuard } from '../authorize/guards/role.guard';
 
+@ApiBearerAuth()
+@hasRole(RoleEnum.Admin)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @ApiTags('Hall management')
 @Controller('hall-management')
 export class HallManagementController {
-  constructor(private readonly hallManagementService: HallManagementService) {
-  }
+  constructor(private readonly hallManagementService: HallManagementService) {}
 
   @Post()
   @ApiBody({
@@ -23,7 +41,11 @@ export class HallManagementController {
   @ApiBody({
     type: HallDto,
   })
-  async update(@Res() res: Response, @Param('id') id: string, @Body() hallDto: HallDto) {
+  async update(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() hallDto: HallDto,
+  ) {
     const result = await this.hallManagementService.update(id, hallDto);
     return res.status(HttpStatus.OK).json(result);
   }

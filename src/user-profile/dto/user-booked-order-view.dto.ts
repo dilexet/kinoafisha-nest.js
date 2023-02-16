@@ -6,7 +6,28 @@ export class UserBookedOrderViewDto {
   id: string;
 
   @AutoMap()
+  movieName: string;
+
+  @AutoMap()
+  moviePosterURL: string;
+
+  @AutoMap()
+  cinemaName: string;
+
+  @AutoMap()
+  address: string;
+
+  @AutoMap()
+  hallName: string;
+
+  @AutoMap()
   totalPrice: number;
+
+  @AutoMap()
+  startDate: string;
+
+  @AutoMap()
+  endDate: string;
 
   @AutoMap()
   seats: BookedSeatViewDto[];

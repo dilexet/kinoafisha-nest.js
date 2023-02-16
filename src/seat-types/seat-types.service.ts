@@ -10,8 +10,7 @@ export class SeatTypesService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
     private seatTypeRepository: SeatTypeRepository,
-  ) {
-  }
+  ) {}
 
   async findAllAsync(): Promise<SeatTypeViewDto[]> {
     const seatTypes = await this.seatTypeRepository.getAll();

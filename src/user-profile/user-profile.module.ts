@@ -13,7 +13,12 @@ import { UserRepository } from '../database/repository/user.repository';
 @Module({
   imports: [TypeOrmModule.forFeature([BookedOrder, UserProfile, User])],
   controllers: [UserProfileController],
-  providers: [UserProfileMapperProfile, MailService, UserProfileService, UserProfileRepository, UserRepository],
+  providers: [
+    UserProfileMapperProfile,
+    MailService,
+    UserProfileService,
+    UserProfileRepository,
+    UserRepository,
+  ],
 })
-export class UserProfileModule {
-}
+export class UserProfileModule {}

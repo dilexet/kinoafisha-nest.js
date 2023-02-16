@@ -11,7 +11,7 @@ enum SeatTypesEnum {
 
   Regular = 'Regular',
 
-  BagChair = 'Bag Chair'
+  BagChair = 'Bag Chair',
 }
 
 export default SeatTypesEnum;

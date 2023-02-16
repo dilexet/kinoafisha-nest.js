@@ -10,16 +10,12 @@ export class Cinema extends BaseEntity {
   @AutoMap()
   name: string;
 
-  @OneToOne(() => Address,
-    address => address.cinema,
-    { cascade: true })
+  @OneToOne(() => Address, (address) => address.cinema, { cascade: true })
   @JoinColumn()
   @AutoMap()
   address: Address;
 
-  @OneToMany(() => Hall,
-    hall => hall.cinema,
-    { cascade: true })
+  @OneToMany(() => Hall, (hall) => hall.cinema, { cascade: true })
   @AutoMap()
   halls: Hall[];
 }

@@ -5,8 +5,7 @@ import { GenreEnum } from '../../shared/enums/genre.enum';
 
 export default class GenreSeed implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {
-
-    const genres = Object.entries(GenreEnum).map(([key, value]) => {
+    const genres = Object.entries(GenreEnum).map(([, value]) => {
       return { name: value };
     });
     const genreRepository = dataSource.getRepository(Genre);

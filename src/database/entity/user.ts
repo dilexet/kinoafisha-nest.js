@@ -34,18 +34,16 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   activationLink: string;
 
-  @OneToOne(() => UserProfile,
-    userProfile => userProfile.user,
-    { cascade: true })
+  @OneToOne(() => UserProfile, (userProfile) => userProfile.user, {
+    cascade: true,
+    eager: true,
+  })
   userProfile: UserProfile;
 
   @AutoMap()
-  @ManyToOne(() => Role,
-    role => role.users,
-    { eager: true })
+  @ManyToOne(() => Role, (role) => role.users, { eager: true })
   role: Role;
 
-  @OneToMany(() => Token,
-      token => token.user)
+  @OneToMany(() => Token, (token) => token.user)
   tokens: Token[];
 }

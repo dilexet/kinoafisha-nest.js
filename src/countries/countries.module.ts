@@ -11,5 +11,4 @@ import { CountryRepository } from '../database/repository/country.repository';
   controllers: [CountriesController],
   providers: [CountriesMapperProfile, CountriesService, CountryRepository],
 })
-export class CountriesModule {
-}
+export class CountriesModule {}

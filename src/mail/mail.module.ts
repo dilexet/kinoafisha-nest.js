@@ -19,6 +19,7 @@ import { MailService } from './mail.service';
       },
       defaults: {
         from: mailConfigConstants.EMAIL_FROM,
+        name: mailConfigConstants.NAME_FROM,
       },
       template: {
         dir: join(process.cwd(), 'dist', 'shared', 'templates'),
@@ -32,5 +33,4 @@ import { MailService } from './mail.service';
   providers: [MailService],
   exports: [MailService],
 })
-export class MailModule {
-}
+export class MailModule {}

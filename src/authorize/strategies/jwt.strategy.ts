@@ -6,9 +6,7 @@ import { UserRepository } from '../../database/repository/user.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(
-    private userRepository: UserRepository,
-  ) {
+  constructor(private userRepository: UserRepository) {
     super({
       ignoreExpiration: false,
       secretOrKey: jwtConfigConstants.JWT_ACCESS_SECRET,

@@ -8,20 +8,29 @@ import { Genre } from '../entity/genre';
 export class GenreRepository extends LinqRepository<Genre> {
   public constructor(
     @InjectDataSource()
-      dataSource: DataSource,
+    dataSource: DataSource,
   ) {
     super(dataSource, Genre);
   }
 
   getById(id: number | string): IQuery<Genre, Genre> {
-    return super.getById(id).and(x => x.deleted).isFalse();
+    return super
+      .getById(id)
+      .and((x) => x.deleted)
+      .isFalse();
   }
 
   getOne(): IQuery<Genre, Genre> {
-    return super.getOne().where(x => x.deleted).isFalse();
+    return super
+      .getOne()
+      .where((x) => x.deleted)
+      .isFalse();
   }
 
   getAll(): IQuery<Genre, Genre[]> {
-    return super.getAll().where(x => x.deleted).isFalse();
+    return super
+      .getAll()
+      .where((x) => x.deleted)
+      .isFalse();
   }
 }

@@ -23,7 +23,7 @@ export default class UserSeed implements Seeder {
       email: 'admin@gmail.com',
       passwordHash: await bcrypt.hash('root', 5),
       isActivated: true,
-      role: rolesCreated.find(x => x.name == RoleEnum.Admin),
+      role: rolesCreated.find((x) => x.name == RoleEnum.Admin),
     };
     const userCreated = await dataSource.getRepository(User).save(user);
 

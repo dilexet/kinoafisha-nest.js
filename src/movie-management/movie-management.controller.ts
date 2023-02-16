@@ -1,18 +1,32 @@
 import {
-  Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MovieManagementService } from './movie-management.service';
 import { Response } from 'express';
 import { MovieDto } from './dto/movie.dto';
+import { hasRole } from '../authorize/decorators/roles.decorator';
+import RoleEnum from '../shared/enums/role.enum';
+import { JwtAuthGuard } from '../authorize/guards/jwt-auth.guard';
+import { RoleGuard } from '../authorize/guards/role.guard';
 
+@ApiBearerAuth()
+@hasRole(RoleEnum.Admin)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @ApiTags('Movie management')
 @Controller('movie-management')
 export class MovieManagementController {
-  constructor(
-    private movieManagementService: MovieManagementService,
-  ) {
-  }
+  constructor(private movieManagementService: MovieManagementService) {}
 
   @Post()
   @ApiBody({
@@ -27,7 +41,11 @@ export class MovieManagementController {
   @ApiBody({
     type: MovieDto,
   })
-  async update(@Res() res: Response, @Param('id') id: string, @Body() movieDto: MovieDto) {
+  async update(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() movieDto: MovieDto,
+  ) {
     const result = await this.movieManagementService.updateAsync(id, movieDto);
     return res.status(HttpStatus.OK).json(result);
   }

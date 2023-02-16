@@ -11,19 +11,14 @@ export class Hall extends BaseEntity {
   @AutoMap()
   name: string;
 
-  @ManyToOne(() => Cinema,
-    cinema => cinema.halls,
-    { onDelete: 'CASCADE' })
+  @ManyToOne(() => Cinema, (cinema) => cinema.halls, { onDelete: 'CASCADE' })
   cinema: Cinema;
 
-  @OneToMany(() => Session,
-    session => session.hall)
+  @OneToMany(() => Session, (session) => session.hall)
   @AutoMap()
   sessions: Session[];
 
-  @OneToMany(() => Row,
-    row => row.hall,
-    { cascade: true })
+  @OneToMany(() => Row, (row) => row.hall, { cascade: true })
   @AutoMap(() => Row)
   rows: Row[];
 }

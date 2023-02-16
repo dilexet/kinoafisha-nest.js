@@ -1,12 +1,10 @@
-import {
-  Column, Entity,
-  ManyToMany, JoinTable, OneToMany,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Genre } from './genre';
 import { Country } from './country';
 import { AutoMap } from '@automapper/classes';
 import { Session } from './session';
 import { BaseEntity } from './base-entity';
+import { Comment } from './comment';
 
 @Entity()
 export class Movie extends BaseEntity {
@@ -30,20 +28,23 @@ export class Movie extends BaseEntity {
   @AutoMap()
   durationInMinutes: number;
 
-  @OneToMany(() => Session,
-    session => session.movie)
+  @Column({ default: 0 })
+  popularity: number;
+
+  @OneToMany(() => Session, (session) => session.movie)
   @AutoMap()
   sessions: Session[];
 
-  @ManyToMany(() => Genre,
-    genre => genre.movies)
+  @ManyToMany(() => Genre, (genre) => genre.movies)
   @JoinTable()
   @AutoMap()
   genres: Genre[];
 
-  @ManyToMany(() => Country,
-    country => country.movies)
+  @ManyToMany(() => Country, (country) => country.movies)
   @JoinTable()
   @AutoMap()
   countries: Country[];
+
+  @OneToMany(() => Comment, (comment) => comment.movie)
+  comments: Comment[];
 }

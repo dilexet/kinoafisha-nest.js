@@ -9,7 +9,6 @@ export class Country extends BaseEntity {
   @AutoMap()
   name: string;
 
-  @ManyToMany(() => Movie,
-    movie => movie.countries)
+  @ManyToMany(() => Movie, (movie) => movie.countries)
   movies: Movie[];
 }

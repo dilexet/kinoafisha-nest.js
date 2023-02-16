@@ -8,20 +8,29 @@ import { Row } from '../entity/row';
 export class RowRepository extends LinqRepository<Row> {
   public constructor(
     @InjectDataSource()
-      dataSource: DataSource,
+    dataSource: DataSource,
   ) {
     super(dataSource, Row);
   }
 
   getById(id: number | string): IQuery<Row, Row> {
-    return super.getById(id).and(x => x.deleted).isFalse();
+    return super
+      .getById(id)
+      .and((x) => x.deleted)
+      .isFalse();
   }
 
   getOne(): IQuery<Row, Row> {
-    return super.getOne().where(x => x.deleted).isFalse();
+    return super
+      .getOne()
+      .where((x) => x.deleted)
+      .isFalse();
   }
 
   getAll(): IQuery<Row, Row[]> {
-    return super.getAll().where(x => x.deleted).isFalse();
+    return super
+      .getAll()
+      .where((x) => x.deleted)
+      .isFalse();
   }
 }

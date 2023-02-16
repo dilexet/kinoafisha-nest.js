@@ -24,23 +24,34 @@ import { MoviesModule } from '../movies/movies.module';
 import { MovieFilterModule } from '../movie-filter/movie-filter.module';
 import { BookingModule } from '../booking/booking.module';
 import { UserProfileModule } from '../user-profile/user-profile.module';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSource.options),
-    AutomapperModule.forRoot(
-      { strategyInitializer: classes() }),
+    AutomapperModule.forRoot({ strategyInitializer: classes() }),
     ScheduleModule.forRoot(),
     MailModule,
-    ImageUploadModule, GenresModule, CountriesModule, RolesModule,
-    SeatTypesModule, CinemasModule, HallsModule, MoviesModule,
-    AuthorizeModule, UserManagementModule,
-    CinemaManagementModule, HallManagementModule,
-    MovieManagementModule, SessionManagementModule,
-    MovieFilterModule, BookingModule, UserProfileModule,
+    CommentsModule,
+    ImageUploadModule,
+    GenresModule,
+    CountriesModule,
+    RolesModule,
+    SeatTypesModule,
+    CinemasModule,
+    HallsModule,
+    MoviesModule,
+    AuthorizeModule,
+    UserManagementModule,
+    CinemaManagementModule,
+    HallManagementModule,
+    MovieManagementModule,
+    SessionManagementModule,
+    MovieFilterModule,
+    BookingModule,
+    UserProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}
